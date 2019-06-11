@@ -1,0 +1,24 @@
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-${SLURM_JOB_ID}
+
+data:
+    name: cosmo
+    data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2018_10_3parA/dim128_cube
+    n_train_files: 2048
+    n_valid_files: 1024
+    samples_per_file: 16
+    batch_size: 8
+    n_epochs: 32
+
+model:
+    name: cosmoflow
+    input_shape: [128, 128, 128, 1]
+    target_size: 3
+    dropout: 0.2
+
+optimizer:
+    name: Adam
+    lr: 0.001
+
+train:
+    loss: mse
+    metrics: ['mae']
