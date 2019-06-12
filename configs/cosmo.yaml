@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-${SLURM_JOB_ID}
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-06-11
 
 data:
     name: cosmo
@@ -6,14 +6,14 @@ data:
     n_train_files: 2048
     n_valid_files: 1024
     samples_per_file: 16
-    batch_size: 8
-    n_epochs: 32
+    batch_size: 4
+    n_epochs: 64
 
 model:
     name: cosmoflow
     input_shape: [128, 128, 128, 1]
     target_size: 3
-    dropout: 0.2
+    dropout: 0.5
 
 optimizer:
     name: Adam
