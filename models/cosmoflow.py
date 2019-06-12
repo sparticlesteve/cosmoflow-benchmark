@@ -13,23 +13,23 @@ def build_model(input_shape, target_size, dropout=0):
         layers.Conv3D(16, input_shape=input_shape, **conv_args),
         layers.MaxPool3D(pool_size=2),
 
-        layers.Conv3D(32, **conv_args),
+        layers.Conv3D(16, **conv_args),
         layers.MaxPool3D(pool_size=2),
 
-        layers.Conv3D(64, **conv_args),
+        layers.Conv3D(16, **conv_args),
         layers.MaxPool3D(pool_size=2),
 
-        layers.Conv3D(128, **conv_args),
+        layers.Conv3D(16, **conv_args),
         layers.MaxPool3D(pool_size=2),
 
-        layers.Conv3D(256, **conv_args),
+        layers.Conv3D(16, **conv_args),
         layers.MaxPool3D(pool_size=2),
 
         layers.Flatten(),
-        layers.Dense(256, activation='relu'),
+        layers.Dense(128, activation='relu'),
         layers.Dropout(dropout),
 
-        layers.Dense(128, activation='relu'),
+        layers.Dense(64, activation='relu'),
         layers.Dropout(dropout),
 
         layers.Dense(target_size)

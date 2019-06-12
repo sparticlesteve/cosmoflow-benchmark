@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-06-11
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-06-12
 
 data:
     name: cosmo
@@ -13,7 +13,7 @@ model:
     name: cosmoflow
     input_shape: [128, 128, 128, 1]
     target_size: 3
-    dropout: 0.5
+    dropout: 0.2
 
 optimizer:
     name: Adam
