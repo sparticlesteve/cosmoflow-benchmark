@@ -3,11 +3,11 @@ output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-06-12
 data:
     name: cosmo
     data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2018_10_3parA/dim128_cube
-    n_train_files: 2048
-    n_valid_files: 1024
+    n_train_files: 3000
+    n_valid_files: 1000
     samples_per_file: 16
     batch_size: 4
-    n_epochs: 64
+    n_epochs: 32
 
 model:
     name: cosmoflow
@@ -16,7 +16,7 @@ model:
     dropout: 0.2
 
 optimizer:
-    name: Adam
+    name: Adadelta
     lr: 0.001
 
 train:
