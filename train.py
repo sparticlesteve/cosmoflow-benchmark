@@ -54,6 +54,7 @@ def print_training_summary(output_dir):
         logging.info('  %s: %g', key, history[key].loc[best])
 
 def reload_last_checkpoint(checkpoint_format, n_epochs):
+    # TODO: clarify confusion on inconsistent epoch numbering
     for epoch in range(n_epochs, 0, -1):
         checkpoint = checkpoint_format.format(epoch=epoch)
         if os.path.exists(checkpoint):
