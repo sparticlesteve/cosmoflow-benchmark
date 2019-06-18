@@ -19,6 +19,7 @@ from data import get_datasets
 from models import get_model
 from utils.optimizers import get_optimizer
 from utils.callbacks import TimingCallback
+from utils.device import configure_session
 
 # Suppress TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -31,6 +32,8 @@ def parse_args():
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
     add_arg('-d', '--distributed', action='store_true')
     add_arg('-v', '--verbose', action='store_true')
+    add_arg('--rank-gpu', action='store_true',
+            help='Use GPU based on local rank')
     add_arg('--resume', action='store_true',
             help='Resume from last checkpoint')
     return parser.parse_args()
@@ -84,6 +87,10 @@ def main():
                  rank, local_rank, n_ranks)
     if rank == 0:
         logging.info('Configuration: %s', config)
+
+    # Device and session configuration
+    gpu = local_rank if args.rank_gpu else None
+    configure_session(gpu=gpu, **config.get('device', {}))
 
     # Load the data
     data_config = config['data']
