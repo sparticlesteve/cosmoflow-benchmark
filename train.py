@@ -87,9 +87,11 @@ def main():
 
     # Load the data
     data_config = config['data']
+    logging.info('Loading data')
     train_data, valid_data = get_datasets(**data_config)
 
     # Construct or reload the model
+    logging.info('Building the model')
     initial_epoch = 0
     checkpoint_format = os.path.join(output_dir, 'checkpoint-{epoch:03d}.h5')
     if args.resume:
@@ -112,6 +114,7 @@ def main():
         model.summary()
 
     # Prepare the callbacks
+    logging.info('Preparing callbacks')
     callbacks = []
     if args.distributed:
 
@@ -139,7 +142,11 @@ def main():
         callbacks.append(tf.keras.callbacks.CSVLogger(
             os.path.join(output_dir, 'history.csv'), append=args.resume))
 
+    if rank == 0:
+        logging.info('Callbacks: %s', callbacks)
+
     # Train the model
+    logging.info('Beginning training')
     n_train = data_config['n_train_files'] * data_config['samples_per_file']
     n_valid = data_config['n_valid_files'] * data_config['samples_per_file']
     n_train_steps = n_train // (data_config['batch_size'] * n_ranks)
