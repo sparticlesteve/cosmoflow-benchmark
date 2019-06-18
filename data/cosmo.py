@@ -36,7 +36,8 @@ def construct_dataset(filenames, batch_size, n_epochs, shuffle=False,
     return data.prefetch(4)
 
 def get_datasets(data_dir, n_train_files, n_valid_files,
-                 samples_per_file, batch_size, n_epochs):
+                 samples_per_file, batch_size, n_epochs,
+                 shuffle_train=True, shuffle_valid=False):
     logging.info('Loading %i training samples from %i files',
                  n_train_files * samples_per_file, n_train_files)
     logging.info('Loading %i validation samples from %i files',
@@ -47,6 +48,8 @@ def get_datasets(data_dir, n_train_files, n_valid_files,
     train_files = all_files[:n_train_files]
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
     # Construct the data pipelines
-    train_dataset = construct_dataset(train_files, batch_size, n_epochs, shuffle=True)
-    valid_dataset = construct_dataset(valid_files, batch_size, n_epochs, shuffle=False)
+    train_dataset = construct_dataset(train_files, batch_size, n_epochs,
+                                      shuffle=shuffle_train)
+    valid_dataset = construct_dataset(valid_files, batch_size, n_epochs,
+                                      shuffle=shuffle_valid)
     return train_dataset, valid_dataset
