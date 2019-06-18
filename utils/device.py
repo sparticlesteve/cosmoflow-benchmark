@@ -6,7 +6,6 @@ Hardware/device configuration
 import os
 
 # Externals
-import keras
 import tensorflow as tf
 
 def configure_session(intra_threads=32, inter_threads=2,
@@ -22,4 +21,4 @@ def configure_session(intra_threads=32, inter_threads=2,
     )
     if gpu is not None:
         config.gpu_options.visible_device_list = str(gpu)
-    keras.backend.set_session(tf.Session(config=config))
+    tf.keras.backend.set_session(tf.Session(config=config))
