@@ -6,9 +6,9 @@ This module contains some utility callbacks for Keras training.
 from time import time
 
 # Externals
-import keras
+import tensorflow as tf
 
-class TimingCallback(keras.callbacks.Callback):
+class TimingCallback(tf.keras.callbacks.Callback):
     """A Keras Callback which records the time of each epoch"""
     def __init__(self):
         self.times = []
