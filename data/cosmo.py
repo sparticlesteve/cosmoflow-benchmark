@@ -20,14 +20,20 @@ def _parse_data(sample_proto):
     label = tf.decode_raw(parsed_example['unitPar'], tf.float32)
     return data, label
 
-def construct_dataset(filenames, batch_size, n_epochs, shuffle_buffer_size=128):
-    return (tf.data.TFRecordDataset(filenames=filenames, num_parallel_reads=4)
-            .shuffle(len(filenames), reshuffle_each_iteration=True)
-            .repeat(n_epochs)
-            .map(_parse_data)
-            .shuffle(shuffle_buffer_size)
-            .batch(batch_size, drop_remainder=True)
-            .prefetch(4))
+def construct_dataset(filenames, batch_size, n_epochs, shuffle=False,
+                      shuffle_buffer_size=128):
+    data = tf.data.TFRecordDataset(filenames=filenames, num_parallel_reads=4)
+    # Shuffle file list
+    if shuffle:
+        data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
+    # Parse samples out of the TFRecord files
+    data = data.map(_parse_data)
+    # Localized sample shuffling (note: imperfect global shuffling)
+    if shuffle:
+        data = data.shuffle(shuffle_buffer_size)
+    data = data.repeat(n_epochs)
+    data = data.batch(batch_size, drop_remainder=True)
+    return data.prefetch(4)
 
 def get_datasets(data_dir, n_train_files, n_valid_files,
                  samples_per_file, batch_size, n_epochs):
@@ -41,6 +47,6 @@ def get_datasets(data_dir, n_train_files, n_valid_files,
     train_files = all_files[:n_train_files]
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
     # Construct the data pipelines
-    train_dataset = construct_dataset(train_files, batch_size, n_epochs)
-    valid_dataset = construct_dataset(valid_files, batch_size, n_epochs)
+    train_dataset = construct_dataset(train_files, batch_size, n_epochs, shuffle=True)
+    valid_dataset = construct_dataset(valid_files, batch_size, n_epochs, shuffle=False)
     return train_dataset, valid_dataset
