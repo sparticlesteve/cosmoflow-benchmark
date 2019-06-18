@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-10-06-13
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-06-17
 
 data:
     name: cosmo
@@ -7,18 +7,18 @@ data:
     n_valid_files: 256
     samples_per_file: 64
     sample_shape: [128, 128, 128, 4]
-    batch_size: 4
+    batch_size: 8
     n_epochs: 32
 
 model:
-    name: cosmoflow
+    name: cosmojan
     input_shape: [128, 128, 128, 4]
     target_size: 4
     dropout: 0.2
 
 optimizer:
-    name: Adam
-    lr: 0.001
+    name: Adadelta
+    lr: 0.5
 
 train:
     loss: mse
