@@ -95,7 +95,7 @@ def main():
     # Load the data
     data_config = config['data']
     logging.info('Loading data')
-    train_data, valid_data = get_datasets(**data_config)
+    train_data, valid_data = get_datasets(rank=rank, n_ranks=n_ranks, **data_config)
 
     # Construct or reload the model
     logging.info('Building the model')
@@ -154,9 +154,9 @@ def main():
 
     # Train the model
     logging.info('Beginning training')
-    n_train = data_config['n_train_files'] * data_config['samples_per_file']
-    n_valid = data_config['n_valid_files'] * data_config['samples_per_file']
-    n_train_steps = n_train // (data_config['batch_size'] * n_ranks)
+    n_train = (data_config['n_train_files']//n_ranks) * data_config['samples_per_file']
+    n_valid = (data_config['n_valid_files']//n_ranks) * data_config['samples_per_file']
+    n_train_steps = n_train // data_config['batch_size']
     n_valid_steps = n_valid // data_config['batch_size']
     model.fit(train_data,
               steps_per_epoch=n_train_steps,

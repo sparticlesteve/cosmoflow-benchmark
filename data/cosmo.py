@@ -21,8 +21,12 @@ def _parse_data(sample_proto):
     return data, label
 
 def construct_dataset(filenames, batch_size, n_epochs, shuffle=False,
-                      shuffle_buffer_size=128):
+                      rank=0, n_ranks=1, shuffle_buffer_size=128):
+    # Define the TFRecord dataset
     data = tf.data.TFRecordDataset(filenames=filenames, num_parallel_reads=4)
+    # Shard into unique subsets for each worker
+    data = data.apply(tf.data.experimental.filter_for_shard(
+        num_shards=n_ranks, shard_index=rank))
     # Shuffle file list
     if shuffle:
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
@@ -37,7 +41,11 @@ def construct_dataset(filenames, batch_size, n_epochs, shuffle=False,
 
 def get_datasets(data_dir, n_train_files, n_valid_files,
                  samples_per_file, batch_size, n_epochs,
+                 rank=0, n_ranks=1,
                  shuffle_train=True, shuffle_valid=False):
+    # Ensure file counts divide evenly into worker shards
+    n_train_files = (n_train_files // n_ranks) * n_ranks
+    n_valid_files = (n_valid_files // n_ranks) * n_ranks
     logging.info('Loading %i training samples from %i files',
                  n_train_files * samples_per_file, n_train_files)
     logging.info('Loading %i validation samples from %i files',
@@ -49,7 +57,9 @@ def get_datasets(data_dir, n_train_files, n_valid_files,
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
     # Construct the data pipelines
     train_dataset = construct_dataset(train_files, batch_size, n_epochs,
+                                      rank=rank, n_ranks=n_ranks,
                                       shuffle=shuffle_train)
     valid_dataset = construct_dataset(valid_files, batch_size, n_epochs,
+                                      rank=rank, n_ranks=n_ranks,
                                       shuffle=shuffle_valid)
     return train_dataset, valid_dataset
