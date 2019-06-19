@@ -128,6 +128,9 @@ def main():
         # Broadcast initial variable states from rank 0 to all processes.
         callbacks.append(hvd.callbacks.BroadcastGlobalVariablesCallback(0))
 
+        # Average metrics across workers
+        callbacks.append(hvd.callbacks.MetricAverageCallback())
+
         # Learning rate warmup
         warmup_epochs = train_config.get('lr_warmup_epochs', 0)
         callbacks.append(hvd.callbacks.LearningRateWarmupCallback(
