@@ -6,9 +6,8 @@ Utilty code for constructing optimizers and scheduling learning rates.
 import math
 
 # Externals
-import tensorflow as tf
 from tensorflow import keras
-#import keras
+import horovod.tensorflow.keras as hvd
 
 def get_optimizer(name, lr, lr_scaling='linear', n_ranks=1,
                   distributed=False, **opt_args):
@@ -22,14 +21,11 @@ def get_optimizer(name, lr, lr_scaling='linear', n_ranks=1,
         lr = lr * math.sqrt(n_ranks)
 
     # Construct the optimizer
-    #OptType = getattr(tf.train, name)
-    #opt = OptType(learning_rate=lr, **opt_args)
     OptType = getattr(keras.optimizers, name)
     opt = OptType(lr=lr, **opt_args)
 
     # Distributed optimizer wrapper
     if distributed:
-        import horovod.keras as hvd
         opt = hvd.DistributedOptimizer(opt)
 
     return opt

@@ -1,13 +1,14 @@
 #!/bin/bash
 #SBATCH -C gpu
-#SBATCH -c 10
-#SBATCH --gres=gpu:1
-#SBATCH --mem=30GB
+#SBATCH --gres=gpu:8
+#SBATCH --exclusive
 #SBATCH -t 8:00:00
-#SBATCH -d singleton
 #SBATCH -J train-cgpu
+#SBATCH -d singleton
 #SBATCH -o logs/%x-%j.out
 
 mkdir -p logs
 . scripts/setup_cgpu.sh
-srun python train.py $@
+
+srun --ntasks-per-node 8 -l -c 10 --mpi=pmi2 \
+    python train.py -d --rank-gpu $@
