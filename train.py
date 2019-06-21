@@ -97,11 +97,13 @@ def main():
 
     # Load the data
     data_config = config['data']
-    logging.info('Loading data')
+    if rank == 0:
+        logging.info('Loading data')
     train_data, valid_data = get_datasets(rank=rank, n_ranks=n_ranks, **data_config)
 
     # Construct or reload the model
-    logging.info('Building the model')
+    if rank == 0:
+        logging.info('Building the model')
     initial_epoch = 0
     checkpoint_format = os.path.join(output_dir, 'checkpoint-{epoch:03d}.h5')
     if args.resume:
@@ -124,7 +126,8 @@ def main():
         model.summary()
 
     # Prepare the callbacks
-    logging.info('Preparing callbacks')
+    if rank == 0:
+        logging.info('Preparing callbacks')
     callbacks = []
     if args.distributed:
 
@@ -160,11 +163,13 @@ def main():
         logging.info('Callbacks: %s', callbacks)
 
     # Train the model
-    logging.info('Beginning training')
+    if rank == 0:
+        logging.info('Beginning training')
     n_train = (data_config['n_train_files']//n_ranks) * data_config['samples_per_file']
     n_valid = (data_config['n_valid_files']//n_ranks) * data_config['samples_per_file']
     n_train_steps = n_train // data_config['batch_size']
     n_valid_steps = n_valid // data_config['batch_size']
+    fit_verbose = 1 if (args.verbose and rank==0) else 2
     model.fit(train_data,
               steps_per_epoch=n_train_steps,
               epochs=data_config['n_epochs'],
@@ -172,7 +177,7 @@ def main():
               validation_steps=n_valid_steps,
               callbacks=callbacks,
               initial_epoch=initial_epoch,
-              verbose=(1 if args.verbose else 2))
+              verbose=fit_verbose)
 
     # Print training summary
     if rank == 0:
