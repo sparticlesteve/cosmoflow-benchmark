@@ -70,6 +70,8 @@ def reload_last_checkpoint(checkpoint_format, n_epochs):
     for epoch in range(n_epochs, 0, -1):
         checkpoint = checkpoint_format.format(epoch=epoch)
         if os.path.exists(checkpoint):
+            # Fix for Lambda layer warning
+            import models.cosmojan
             model = hvd.load_model(checkpoint)
             return epoch, model
     raise Exception('Unable to find a checkpoint file at %s' % checkpoint_format)
