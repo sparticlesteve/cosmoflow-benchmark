@@ -19,7 +19,6 @@ def _parse_data(sample_proto, shape):
     data = tf.decode_raw(parsed_example['3Dmap'], tf.float32)    
     data = tf.reshape(data, shape)
     data /= (tf.reduce_sum(data) / np.prod(shape))
-    #data /= (tf.reduce_sum(data) / 128**3)
     # Decode the targets
     label = tf.decode_raw(parsed_example['unitPar'], tf.float32)
     return data, label
