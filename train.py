@@ -135,6 +135,7 @@ def main():
         callbacks.append(hvd.callbacks.MetricAverageCallback())
 
         # Learning rate warmup
+        train_config = config['train']
         warmup_epochs = train_config.get('lr_warmup_epochs', 0)
         callbacks.append(hvd.callbacks.LearningRateWarmupCallback(
             warmup_epochs=warmup_epochs, verbose=1))
