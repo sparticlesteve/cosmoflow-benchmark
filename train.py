@@ -71,7 +71,7 @@ def reload_last_checkpoint(checkpoint_format, n_epochs):
         checkpoint = checkpoint_format.format(epoch=epoch)
         if os.path.exists(checkpoint):
             # Fix for Lambda layer warning
-            import models.cosmojan
+            import models.cosmoflow
             model = hvd.load_model(checkpoint)
             return epoch, model
     raise Exception('Unable to find a checkpoint file at %s' % checkpoint_format)
@@ -160,7 +160,7 @@ def main():
             os.path.join(output_dir, 'history.csv'), append=args.resume))
 
     if rank == 0:
-        logging.info('Callbacks: %s', callbacks)
+        logging.debug('Callbacks: %s', callbacks)
 
     # Train the model
     if rank == 0:

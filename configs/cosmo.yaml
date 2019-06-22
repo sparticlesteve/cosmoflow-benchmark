@@ -12,7 +12,7 @@ data:
     n_epochs: 64
 
 model:
-    name: cosmojan
+    name: cosmoflow
     input_shape: [128, 128, 128, 4]
     target_size: 4
     dropout: 0.2
