@@ -65,14 +65,18 @@ def print_training_summary(output_dir):
     for key in history.keys():
         logging.info('  %s: %g', key, history[key].loc[best])
 
-def reload_last_checkpoint(checkpoint_format, n_epochs):
+def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
     # TODO: clarify confusion on inconsistent epoch numbering
     for epoch in range(n_epochs, 0, -1):
         checkpoint = checkpoint_format.format(epoch=epoch)
         if os.path.exists(checkpoint):
             # Fix for Lambda layer warning
             import models.cosmoflow
-            model = hvd.load_model(checkpoint)
+            # Use horovod's reload to prepare the DistributedOptimizer
+            if distributed:
+                model = hvd.load_model(checkpoint)
+            else:
+                model = tf.keras.models.load_model(checkpoint)
             return epoch, model
     raise Exception('Unable to find a checkpoint file at %s' % checkpoint_format)
 
@@ -109,7 +113,8 @@ def main():
     if args.resume:
         # Reload model from last checkpoint
         initial_epoch, model = reload_last_checkpoint(
-            checkpoint_format, data_config['n_epochs'])
+            checkpoint_format, data_config['n_epochs'],
+            distributed=args.distributed)
     else:
         # Build a new model
         model = get_model(**config['model'])
