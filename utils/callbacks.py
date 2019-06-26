@@ -19,3 +19,4 @@ class TimingCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         epoch_time = time() - self.starttime
         self.times.append(epoch_time)
+        logs['time'] = epoch_time
