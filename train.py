@@ -31,11 +31,11 @@ def parse_args():
     add_arg = parser.add_argument
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
     add_arg('-d', '--distributed', action='store_true')
-    add_arg('-v', '--verbose', action='store_true')
     add_arg('--rank-gpu', action='store_true',
             help='Use GPU based on local rank')
     add_arg('--resume', action='store_true',
             help='Resume from last checkpoint')
+    add_arg('-v', '--verbose', action='store_true')
     return parser.parse_args()
 
 def init_workers(distributed=False):
@@ -60,10 +60,11 @@ def load_history(output_dir):
 
 def print_training_summary(output_dir):
     history = load_history(output_dir)
-    best = history.val_loss.idxmin()
-    logging.info('Best result:')
-    for key in history.keys():
-        logging.info('  %s: %g', key, history[key].loc[best])
+    if 'val_loss' in history.keys():
+        best = history.val_loss.idxmin()
+        logging.info('Best result:')
+        for key in history.keys():
+            logging.info('  %s: %g', key, history[key].loc[best])
 
 def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
     # TODO: clarify confusion on inconsistent epoch numbering
