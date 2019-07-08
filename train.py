@@ -103,7 +103,8 @@ def main():
     data_config = config['data']
     if rank == 0:
         logging.info('Loading data')
-    train_data, valid_data = get_datasets(rank=rank, n_ranks=n_ranks, **data_config)
+    datasets = get_datasets(rank=rank, n_ranks=n_ranks, **data_config)
+    logging.info('Datasets: %s', datasets)
 
     # Construct or reload the model
     if rank == 0:
@@ -170,16 +171,12 @@ def main():
     # Train the model
     if rank == 0:
         logging.info('Beginning training')
-    n_train = (data_config['n_train_files']//n_ranks) * data_config['samples_per_file']
-    n_valid = (data_config['n_valid_files']//n_ranks) * data_config['samples_per_file']
-    n_train_steps = n_train // data_config['batch_size']
-    n_valid_steps = n_valid // data_config['batch_size']
     fit_verbose = 1 if (args.verbose and rank==0) else 2
-    model.fit(train_data,
-              steps_per_epoch=n_train_steps,
+    model.fit(datasets['train_dataset'],
+              steps_per_epoch=datasets['n_train_steps'],
               epochs=data_config['n_epochs'],
-              validation_data=valid_data,
-              validation_steps=n_valid_steps,
+              validation_data=datasets['valid_dataset'],
+              validation_steps=datasets['n_valid_steps'],
               callbacks=callbacks,
               initial_epoch=initial_epoch,
               verbose=fit_verbose)
