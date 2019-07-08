@@ -56,6 +56,7 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
     logging.info('Loading %i validation samples from %i files',
                  n_valid_files * samples_per_file, n_valid_files)
     # Select the training and validation file lists
+    data_dir = os.path.expandvars(data_dir)
     all_files = [os.path.join(data_dir, f) for f in os.listdir(data_dir)
                  if f.endswith('tfrecords')]
     train_files = all_files[:n_train_files]
