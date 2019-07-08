@@ -6,6 +6,7 @@ Main training script for the CosmoFlow Keras benchmark
 import os
 import argparse
 import logging
+import pickle
 
 # External imports
 import yaml
@@ -63,6 +64,13 @@ def load_config(config_file, data_config=None):
     if data_config is not None:
         config['data'].update(data_config)
     return config
+
+def save_config(config):
+    output_dir = config['output_dir']
+    config_file = os.path.join(output_dir, 'config.pkl')
+    logging.info('Writing config via pickle to %s', config_file)
+    with open(config_file, 'wb') as f:
+        pickle.dump(config, f)
 
 def load_history(output_dir):
     return pd.read_csv(os.path.join(output_dir, 'history.csv'))
@@ -139,6 +147,12 @@ def main():
 
     if rank == 0:
         model.summary()
+
+    # Save configuration to output directory
+    if rank == 0:
+        data_config['n_train'] = datasets['n_train']
+        data_config['n_valid'] = datasets['n_valid']
+        save_config(config)
 
     # Prepare the callbacks
     if rank == 0:
