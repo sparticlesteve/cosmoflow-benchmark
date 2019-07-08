@@ -20,6 +20,7 @@ from models import get_model
 from utils.optimizers import get_optimizer
 from utils.callbacks import TimingCallback
 from utils.device import configure_session
+from utils.argparse import ReadYaml
 
 # Suppress TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -30,6 +31,8 @@ def parse_args():
     parser = argparse.ArgumentParser('train.py')
     add_arg = parser.add_argument
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
+    add_arg('--data-config', action=ReadYaml,
+            help='Override data config settings')
     add_arg('-d', '--distributed', action='store_true')
     add_arg('--rank-gpu', action='store_true',
             help='Use GPU based on local rank')
@@ -50,10 +53,16 @@ def config_logging(verbose):
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level, format=log_format)
 
-def load_config(config_file):
+def load_config(config_file, data_config=None):
     """Reads the YAML config file and returns a config dictionary"""
     with open(config_file) as f:
-        return yaml.load(f, Loader=yaml.FullLoader)
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    # Expand paths
+    config['output_dir'] = os.path.expandvars(config['output_dir'])
+    # Override config from command line
+    if data_config is not None:
+        config['data'].update(data_config)
+    return config
 
 def load_history(output_dir):
     return pd.read_csv(os.path.join(output_dir, 'history.csv'))
@@ -87,9 +96,8 @@ def main():
     # Initialization
     args = parse_args()
     rank, local_rank, n_ranks = init_workers(args.distributed)
-    config = load_config(args.config)
-    output_dir = os.path.expandvars(config['output_dir'])
-    os.makedirs(output_dir, exist_ok=True)
+    config = load_config(args.config, args.data_config)
+    os.makedirs(config['output_dir'], exist_ok=True)
     config_logging(verbose=args.verbose)
     logging.info('Initialized rank %i local_rank %i size %i',
                  rank, local_rank, n_ranks)
@@ -111,7 +119,7 @@ def main():
     if rank == 0:
         logging.info('Building the model')
     initial_epoch = 0
-    checkpoint_format = os.path.join(output_dir, 'checkpoint-{epoch:03d}.h5')
+    checkpoint_format = os.path.join(config['output_dir'], 'checkpoint-{epoch:03d}.h5')
     if args.resume:
         # Reload model from last checkpoint
         initial_epoch, model = reload_last_checkpoint(
@@ -164,7 +172,7 @@ def main():
     if rank == 0:
         callbacks.append(tf.keras.callbacks.ModelCheckpoint(checkpoint_format))
         callbacks.append(tf.keras.callbacks.CSVLogger(
-            os.path.join(output_dir, 'history.csv'), append=args.resume))
+            os.path.join(config['output_dir'], 'history.csv'), append=args.resume))
 
     if rank == 0:
         logging.debug('Callbacks: %s', callbacks)
@@ -184,7 +192,7 @@ def main():
 
     # Print training summary
     if rank == 0:
-        print_training_summary(output_dir)
+        print_training_summary(config['output_dir'])
 
     # Finalize
     if rank == 0:
