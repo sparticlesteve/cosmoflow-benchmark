@@ -1,11 +1,11 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-06-25-cpu
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-07-13-cpu
 
 data:
     name: cosmo
-    data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
-    #data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
-    n_train_files: 64 #640
-    n_valid_files: 8 #256
+    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
+    #data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
+    n_train_files: 640
+    n_valid_files: 256
     samples_per_file: 64
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
