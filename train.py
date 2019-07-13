@@ -32,6 +32,7 @@ def parse_args():
     parser = argparse.ArgumentParser('train.py')
     add_arg = parser.add_argument
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
+    add_arg('--output-dir', help='Override output directory')
     add_arg('--data-config', action=ReadYaml,
             help='Override data config settings')
     add_arg('-d', '--distributed', action='store_true')
@@ -54,12 +55,14 @@ def config_logging(verbose):
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level, format=log_format)
 
-def load_config(config_file, data_config=None):
+def load_config(config_file, output_dir=None, data_config=None):
     """Reads the YAML config file and returns a config dictionary"""
     with open(config_file) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     # Expand paths
-    config['output_dir'] = os.path.expandvars(config['output_dir'])
+    config['output_dir'] = (
+        os.path.expandvars(config['output_dir'])
+        if output_dir is None else os.path.expandvars(output_dir)
     # Override config from command line
     if data_config is not None:
         config['data'].update(data_config)
@@ -104,7 +107,8 @@ def main():
     # Initialization
     args = parse_args()
     rank, local_rank, n_ranks = init_workers(args.distributed)
-    config = load_config(args.config, args.data_config)
+    config = load_config(args.config, output_dir=args.output_dir,
+                         data_config=args.data_config)
     os.makedirs(config['output_dir'], exist_ok=True)
     config_logging(verbose=args.verbose)
     logging.info('Initialized rank %i local_rank %i size %i',
