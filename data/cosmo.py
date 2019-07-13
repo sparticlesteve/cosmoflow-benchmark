@@ -63,8 +63,8 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
         logging.info('Loading %i validation samples from %i files', n_valid, n_valid_files)
     # Select the training and validation file lists
     data_dir = os.path.expandvars(data_dir)
-    all_files = [os.path.join(data_dir, f) for f in os.listdir(data_dir)
-                 if f.endswith('tfrecords')]
+    all_files = sorted([os.path.join(data_dir, f) for f in os.listdir(data_dir)
+                        if f.endswith('tfrecords')])
     train_files = all_files[:n_train_files]
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
     # Construct the data pipelines
@@ -83,4 +83,3 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
     return dict(train_dataset=train_dataset, valid_dataset=valid_dataset,
                 n_train=n_train, n_valid=n_valid, n_train_steps=n_train_steps,
                 n_valid_steps=n_valid_steps)
-
