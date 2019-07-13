@@ -27,8 +27,8 @@ def _parse_data(sample_proto, shape):
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       rank=0, n_ranks=1, shard=True, shuffle=False,
                       shuffle_buffer_size=128):
-    # Define the TFRecord dataset
-    data = tf.data.TFRecordDataset(filenames=filenames, num_parallel_reads=4)
+    # Define the dataset from the list of files
+    data = tf.data.Dataset.list_files(filenames, shuffle=False)
     # Shard into unique subsets for each worker
     if shard:
         data = data.apply(filter_for_shard(num_shards=n_ranks, shard_index=rank))
@@ -37,7 +37,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
     # Parse samples out of the TFRecord files
     parse_data = partial(_parse_data, shape=sample_shape)
-    data = data.map(parse_data)
+    data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
     # Localized sample shuffling (note: imperfect global shuffling)
     if shuffle:
         data = data.shuffle(shuffle_buffer_size)
