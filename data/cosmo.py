@@ -29,13 +29,11 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       shuffle_buffer_size=128):
     # Define the dataset from the list of files
     data = tf.data.Dataset.list_files(filenames, shuffle=False)
-    # Shard into unique subsets for each worker
     if shard:
-        data = data.apply(filter_for_shard(num_shards=n_ranks, shard_index=rank))
-    # Shuffle file list
+        data = data.shard(num_shards=n_ranks, index=rank)
     if shuffle:
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
-    # Parse samples out of the TFRecord files
+    # Parse TFRecords
     parse_data = partial(_parse_data, shape=sample_shape)
     data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
     # Localized sample shuffling (note: imperfect global shuffling)
