@@ -6,6 +6,9 @@
 #SBATCH -d singleton
 #SBATCH -o logs/%x-%j.out
 
+# If using burst buffer
+####DW persistentdw name=cosmobb
+
 mkdir -p logs
 . scripts/setup_cori.sh
 
