@@ -58,8 +58,9 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
     if shard:
         n_train_steps = n_train_steps // n_ranks
         n_valid_steps = n_valid_steps // n_ranks
-    logging.info('Loading %i training samples from %i files', n_train, n_train_files)
-    logging.info('Loading %i validation samples from %i files', n_valid, n_valid_files)
+    if rank == 0:
+        logging.info('Loading %i training samples from %i files', n_train, n_train_files)
+        logging.info('Loading %i validation samples from %i files', n_valid, n_valid_files)
     # Select the training and validation file lists
     data_dir = os.path.expandvars(data_dir)
     all_files = [os.path.join(data_dir, f) for f in os.listdir(data_dir)
