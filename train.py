@@ -62,7 +62,7 @@ def load_config(config_file, output_dir=None, data_config=None):
     # Expand paths
     config['output_dir'] = (
         os.path.expandvars(config['output_dir'])
-        if output_dir is None else os.path.expandvars(output_dir)
+        if output_dir is None else os.path.expandvars(output_dir))
     # Override config from command line
     if data_config is not None:
         config['data'].update(data_config)
