@@ -23,6 +23,12 @@ from utils.callbacks import TimingCallback
 from utils.device import configure_session
 from utils.argparse import ReadYaml
 
+# Stupid workaround until absl logging fix, see:
+# https://github.com/tensorflow/tensorflow/issues/26691
+import absl.logging
+logging.root.removeHandler(absl.logging._absl_handler)
+absl.logging._warn_preinit_stderr = False
+
 # Suppress TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.logging.set_verbosity(logging.ERROR)
