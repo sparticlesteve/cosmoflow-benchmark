@@ -11,7 +11,5 @@
 
 mkdir -p logs
 . scripts/setup_cori.sh
-config=configs/scaling.yaml
-#config=configs/scaling_dummy.yaml
 
-srun -l -u python train.py $config -d "$@"
+srun -l -u python train.py -d $@
