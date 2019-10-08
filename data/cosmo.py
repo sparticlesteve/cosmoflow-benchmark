@@ -5,9 +5,7 @@ import logging
 from functools import partial
 
 import numpy as np
-
 import tensorflow as tf
-from tensorflow.data.experimental import filter_for_shard
 
 def _parse_data(sample_proto, shape):
     parsed_example = tf.parse_single_example(
