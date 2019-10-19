@@ -10,17 +10,13 @@ import tensorflow as tf
 def _parse_data(sample_proto, shape):
     parsed_example = tf.parse_single_example(
         sample_proto,
-        features = {'3Dmap': tf.FixedLenFeature([], tf.string),
-                    'unitPar': tf.FixedLenFeature([], tf.string),
-                    'physPar': tf.FixedLenFeature([], tf.string)}
+        features = dict(x=tf.FixedLenFeature(shape, tf.float32),
+                        y=tf.FixedLenFeature([4], tf.float32))
     )
     # Decode the data and normalize
-    data = tf.decode_raw(parsed_example['3Dmap'], tf.float32)    
-    data = tf.reshape(data, shape)
-    data /= (tf.reduce_sum(data) / np.prod(shape))
-    # Decode the targets
-    label = tf.decode_raw(parsed_example['unitPar'], tf.float32)
-    return data, label
+    x, y = parsed_example['x'], parsed_example['y']
+    x /= (tf.reduce_sum(x) / np.prod(shape))
+    return x, y
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       rank=0, n_ranks=1, shard=True, shuffle=False,
@@ -34,9 +30,6 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
     # Parse TFRecords
     parse_data = partial(_parse_data, shape=sample_shape)
     data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
-    # Localized sample shuffling (note: imperfect global shuffling)
-    if shuffle:
-        data = data.shuffle(shuffle_buffer_size)
     data = data.repeat(n_epochs)
     data = data.batch(batch_size, drop_remainder=True)
     return data.prefetch(4)
@@ -62,7 +55,7 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
     # Select the training and validation file lists
     data_dir = os.path.expandvars(data_dir)
     all_files = sorted([os.path.join(data_dir, f) for f in os.listdir(data_dir)
-                        if f.endswith('tfrecords')])
+                        if f.endswith('.tfrecord')])
     train_files = all_files[:n_train_files]
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
     # Construct the data pipelines
