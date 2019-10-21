@@ -8,4 +8,4 @@ for benchmarking. It is written in TensorFlow with the Keras API and uses
 ## Datasets
 
 Published data available at:
-https://portal.nersc.gov/project/m3363/
+https://portal.nersc.gov/project/m3363/cosmoUniverse_2019_02_4parE/cosmoUniverse_2019_02_4parE.html
