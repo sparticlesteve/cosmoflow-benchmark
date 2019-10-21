@@ -1,10 +1,10 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-001
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-19-10-18
 
 data:
     name: cosmo
-    data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
+    #data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
     #data_dir: $DW_PERSISTENT_STRIPED_cosmobb/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
-    #data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
+    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
     n_train_files: 640
     n_valid_files: 256
     samples_per_file: 64
