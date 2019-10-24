@@ -186,11 +186,12 @@ def main():
         callbacks.append(hvd.callbacks.LearningRateWarmupCallback(
             warmup_epochs=warmup_epochs, verbose=1))
 
-        # Learning rate decay schedule
-        for lr_schedule in train_config.get('lr_schedule', []):
-            if rank == 0:
-                logging.info('Adding LR schedule: %s', lr_schedule)
-            callbacks.append(hvd.callbacks.LearningRateScheduleCallback(**lr_schedule))
+    # Learning rate decay schedule
+    lr_schedule = train_config.get('lr_schedule', {})
+    if rank == 0:
+        logging.info('Adding LR decay schedule: %s', lr_schedule)
+    callbacks.append(tf.keras.callbacks.LearningRateScheduler(
+        schedule=lambda epoch, lr: lr * lr_schedule.get(epoch, 1)))
 
     # Timing
     timing_callback = TimingCallback()

@@ -27,5 +27,5 @@ train:
     loss: mse
     metrics: ['mae']
     lr_schedule:
-        - {start_epoch: 16, end_epoch: 32, multiplier: 0.3}
-        - {start_epoch: 32, end_epoch: 64, multiplier: 0.1}
+        16: 0.3
+        32: 0.333
