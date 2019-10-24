@@ -26,7 +26,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       rank=0, n_ranks=1, shard=True, shuffle=False,
                       shuffle_buffer_size=128):
     # Define the dataset from the list of files
-    data = tf.data.Dataset.from_tensor_slices(filenames, shuffle=False)
+    data = tf.data.Dataset.from_tensor_slices(filenames)
     if shard:
         data = data.shard(num_shards=n_ranks, index=rank)
     if shuffle:
