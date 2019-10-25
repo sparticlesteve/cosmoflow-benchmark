@@ -35,7 +35,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
     return data.prefetch(4)
 
 def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
-                 samples_per_file, batch_size, n_epochs,
+                 batch_size, n_epochs, samples_per_file=1,
                  shard=True, shuffle_train=True, shuffle_valid=False,
                  rank=0, n_ranks=1):
     # Ensure file counts divide evenly into worker shards
