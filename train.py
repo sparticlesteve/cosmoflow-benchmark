@@ -135,7 +135,7 @@ def main():
     if rank == 0:
         logging.info('Loading data')
     datasets = get_datasets(rank=rank, n_ranks=n_ranks, **data_config)
-    logging.info('Datasets: %s', datasets)
+    logging.debug('Datasets: %s', datasets)
 
     # Construct or reload the model
     if rank == 0:
