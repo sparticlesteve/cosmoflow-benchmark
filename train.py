@@ -93,7 +93,10 @@ def print_training_summary(output_dir):
             logging.info('  %s: %g', key, history[key].loc[best])
 
 def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
-    # TODO: clarify confusion on inconsistent epoch numbering
+    """Finds and loads the last checkpoint matching the provided pattern"""
+    # Count down from n_epochs to 0 to find the last epoch.
+    # Note that keras names checkpoint files with epoch number starting from 1.
+    # So the matched number corresponds to the new initial epoch.
     for epoch in range(n_epochs, 0, -1):
         checkpoint = checkpoint_format.format(epoch=epoch)
         if os.path.exists(checkpoint):
