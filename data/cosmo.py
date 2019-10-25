@@ -19,8 +19,8 @@ def _parse_data(sample_proto, shape):
     return x, y
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
-                      rank=0, n_ranks=1, shard=True, shuffle=False,
-                      shuffle_buffer_size=128):
+                      rank=0, n_ranks=1, shard=True, shuffle=False):
+
     # Define the dataset from the list of files
     data = tf.data.Dataset.from_tensor_slices(filenames)
     if shard:
