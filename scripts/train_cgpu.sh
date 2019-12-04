@@ -11,4 +11,4 @@ mkdir -p logs
 . scripts/setup_cgpu.sh
 
 srun --ntasks-per-node 8 -l -u \
-    python train.py -d --rank-gpu $@
+    python train.py -d --rank-gpu "$@"
