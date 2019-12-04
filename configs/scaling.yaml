@@ -1,10 +1,8 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/scaling-scratch-n${SLURM_JOB_NUM_NODES}
-#output_dir: $SCRATCH/cosmoflow-benchmark/scaling-dwarp-n${SLURM_JOB_NUM_NODES}
+output_dir: $SCRATCH/cosmoflow-benchmark/scaling-n${SLURM_JOB_NUM_NODES}
 
 data:
     name: cosmo
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
-    #data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
     #data_dir: $DW_PERSISTENT_STRIPED_cosmobb/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
     n_train_files: 4
     n_valid_files: 0
