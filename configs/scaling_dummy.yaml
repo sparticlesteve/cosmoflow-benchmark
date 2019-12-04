@@ -2,7 +2,7 @@ output_dir: $SCRATCH/cosmoflow-benchmark/scaling-dummy-n${SLURM_JOB_NUM_NODES}
 
 data:
     name: dummy
-    n_train: 256
+    n_train: 64
     n_valid: 0
     shard: false
     sample_shape: [128, 128, 128, 4]

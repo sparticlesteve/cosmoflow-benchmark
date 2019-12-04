@@ -2,11 +2,40 @@
 
 set -ex
 
-# Weak scaling dataset size
-sbatch -N 1 scripts/train_cori.sh --data-config "{n_train_files: 4}"
-sbatch -N 2 scripts/train_cori.sh --data-config "{n_train_files: 8}"
-sbatch -N 4 scripts/train_cori.sh --data-config "{n_train_files: 16}"
-sbatch -N 8 scripts/train_cori.sh --data-config "{n_train_files: 32}"
-sbatch -N 16 scripts/train_cori.sh --data-config "{n_train_files: 64}"
-sbatch -N 32 scripts/train_cori.sh --data-config "{n_train_files: 128}"
-sbatch -N 64 scripts/train_cori.sh --data-config "{n_train_files: 256}"
+# Scaling on Cori KNL up to 1k nodes
+sbatch -N 1 scripts/train_cori.sh --data-config "{n_train_files: 1}" configs/scaling.yaml
+sbatch -N 2 scripts/train_cori.sh --data-config "{n_train_files: 2}" configs/scaling.yaml
+sbatch -N 4 scripts/train_cori.sh --data-config "{n_train_files: 4}" configs/scaling.yaml
+sbatch -N 8 scripts/train_cori.sh --data-config "{n_train_files: 8}" configs/scaling.yaml
+sbatch -N 16 scripts/train_cori.sh --data-config "{n_train_files: 16}" configs/scaling.yaml
+sbatch -N 32 scripts/train_cori.sh --data-config "{n_train_files: 32}" configs/scaling.yaml
+sbatch -N 64 -q regular scripts/train_cori.sh --data-config "{n_train_files: 64}" configs/scaling.yaml
+
+sbatch -N 128 -q regular scripts/train_cori.sh --data-config "{n_train_files: 128}" configs/scaling.yaml
+sbatch -N 256 -q regular scripts/train_cori.sh --data-config "{n_train_files: 256}" configs/scaling.yaml
+sbatch -N 512 -q regular scripts/train_cori.sh --data-config "{n_train_files: 512}" configs/scaling.yaml
+sbatch -N 1024 -q regular scripts/train_cori.sh --data-config "{n_train_files: 1024}" configs/scaling.yaml
+
+# Scaling on Cori KNL with dummy data
+#sbatch -N 1 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 2 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 4 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 8 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 16 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 32 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 64 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 128 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 256 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 512 scripts/train_cori.sh configs/scaling_dummy.yaml
+#sbatch -N 1024 -q regular scripts/train_cori.sh configs/scaling_dummy.yaml
+
+# Scaling on 1 Cori GPU node
+#sbatch -J scaling-cgpu --gres=gpu:1 -n 1 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 4}"
+#sbatch -J scaling-cgpu --gres=gpu:2 -n 2 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 8}"
+#sbatch -J scaling-cgpu --gres=gpu:4 -n 4 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 16}"
+#sbatch -J scaling-cgpu --gres=gpu:8 -n 8 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 32}"
+
+# Scaling across GPU nodes
+#sbatch -J scaling-cgpu -N 2 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 64}"
+#sbatch -J scaling-cgpu -N 4 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 64}"
+#sbatch -J scaling-cgpu -N 8 scripts/train_cgpu.sh configs/scaling_cgpu.yaml --data-config "{n_train_files: 64}"

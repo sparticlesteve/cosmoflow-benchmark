@@ -1,10 +1,11 @@
 #!/bin/bash
-#SBATCH -C haswell
+#SBATCH -C knl
 #SBATCH -q debug
 #SBATCH -t 30
 #SBATCH -J train-cori
-#SBATCH -d singleton
 #SBATCH -o logs/%x-%j.out
+
+###SBATCH -d singleton
 
 # If using burst buffer
 ####DW persistentdw name=cosmobb
