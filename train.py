@@ -13,6 +13,9 @@ import yaml
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+# Suppress TF warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
 
 # Local imports
@@ -28,10 +31,6 @@ from utils.argparse import ReadYaml
 import absl.logging
 logging.root.removeHandler(absl.logging._absl_handler)
 absl.logging._warn_preinit_stderr = False
-
-# Suppress TF warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-tf.logging.set_verbosity(logging.ERROR)
 
 def parse_args():
     """Parse command line arguments"""
