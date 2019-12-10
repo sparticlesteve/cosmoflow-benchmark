@@ -5,3 +5,6 @@ export KMP_AFFINITY="granularity=fine,compact,1,0"
 export HDF5_USE_FILE_LOCKING=FALSE
 module load tensorflow/intel-1.13.1-py36
 module list
+
+# Pick up my user-installed timemory libs
+export LD_LIBRARY_PATH=$PYTHONUSERBASE/lib:$LD_LIBRARY_PATH
