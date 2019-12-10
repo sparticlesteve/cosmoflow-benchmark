@@ -17,6 +17,7 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
+import timemory
 
 # Local imports
 from data import get_datasets
@@ -110,6 +111,8 @@ def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
             return epoch, model
     raise Exception('Unable to find a checkpoint file at %s' % checkpoint_format)
 
+@timemory.util.auto_tuple([getattr(timemory.component, c) for c in
+    ['thread_cpu_clock', 'page_rss', 'priority_context_switch', 'read_bytes', 'written_bytes']])
 def main():
     """Main function"""
 
