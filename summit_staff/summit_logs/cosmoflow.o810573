@@ -1,0 +1,109 @@
+Setup env
+Copy files
+Train 1 node scalability
+2020-01-01 15:12:39.975766: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+2020-01-01 15:12:46.033757: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:46.033830: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+2020-01-01 15:12:49.577625: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:49.577559: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:49.585560: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+2020-01-01 15:12:53.028549: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:53.028551: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:53.028551: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:53.062767: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+2020-01-01 15:12:56.650841: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:56.650876: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:56.666805: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:56.666836: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:12:56.666852: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+2020-01-01 15:13:00.099384: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:13:00.099431: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:13:00.099442: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:13:00.108511: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:13:00.108515: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 15:13:00.108502: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+usage: train.py [-h] [--output-dir OUTPUT_DIR] [--data-config DATA_CONFIG]
+                [-d] [--rank-gpu] [--resume] [-v]
+                [config]
+train.py: error: unrecognized arguments: configs/scaling_cgpu.yaml
+Train across node scalability

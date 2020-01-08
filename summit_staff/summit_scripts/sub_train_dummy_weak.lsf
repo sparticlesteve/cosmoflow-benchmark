@@ -1,0 +1,27 @@
+#!/bin/bash
+# Begin LSF directives
+#BSUB -P stf011
+#BSUB -J cosmoflow
+#BSUB -o logs/cosmoflow.o%J
+#BSUB -W 1:00
+#BSUB -nnodes 100
+#BSUB -alloc_flags "nvme smt4"
+#BSUB -N
+# End LSF directives and begin shell commands
+
+nnodes=$(cat ${LSB_DJOB_HOSTFILE} | sort | uniq | grep -v login | grep -v batch | wc -l)
+
+echo "Setup env"
+export PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$PATH
+export LD_LIBRARY_PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$LD_LIBRARY_PATH
+
+echo "Train multi node scalability"
+jsrun -n1 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_6
+jsrun -n2 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_12
+jsrun -n4 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_24
+jsrun -n8 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_48
+jsrun -n16 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_96
+
+jsrun -n32 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_192
+jsrun -n64 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_384
+jsrun -n100 -a6 -c42 -g6 -r1 --bind=proportional-packed:7 --launch_distribution=packed stdbuf -o0 python train.py -d --rank-gpu summit_scripts/scaling_dummy.yaml  --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_600

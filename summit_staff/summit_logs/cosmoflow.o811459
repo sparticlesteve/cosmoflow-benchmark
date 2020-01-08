@@ -1,0 +1,656 @@
+Setup env
+Train multi node scalability
+2020-01-01 22:27:49.291926: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:49.291941: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:49.291926: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:49.291960: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:49.291956: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:49.291954: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:54,691 INFO Initialized rank 3 local_rank 3 size 6
+2020-01-01 22:27:54,691 INFO Initialized rank 0 local_rank 0 size 6
+2020-01-01 22:27:54,691 INFO Initialized rank 5 local_rank 5 size 6
+2020-01-01 22:27:54,691 INFO Initialized rank 4 local_rank 4 size 6
+2020-01-01 22:27:54,691 INFO Initialized rank 1 local_rank 1 size 6
+2020-01-01 22:27:54,691 INFO Initialized rank 2 local_rank 2 size 6
+2020-01-01 22:27:54,691 INFO Configuration: {'data': {'name': 'dummy', 'n_train': 64, 'n_valid': 0, 'shard': False, 'sample_shape': [128, 128, 128, 4], 'target_shape': [4], 'batch_size': 1, 'n_epochs': 4}, 'model': {'name': 'cosmoflow', 'input_shape': [128, 128, 128, 4], 'target_size': 4, 'dropout': 0.2}, 'optimizer': {'name': 'Adadelta', 'lr': 0.5, 'lr_scaling': 'none'}, 'train': {'loss': 'mse', 'metrics': ['mae']}, 'output_dir': '/gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_6'}
+2020-01-01 22:27:54.699131: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:27:54.699367: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:27:54.699365: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:27:54.699403: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:27:54.699404: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:27:54.699412: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:27:55.634073: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:04:00.0
+2020-01-01 22:27:55.634112: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:55.634342: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:06:00.0
+2020-01-01 22:27:55.634371: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:55.634626: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:05:00.0
+2020-01-01 22:27:55.634653: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:55.634796: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:03:00.0
+2020-01-01 22:27:55.634834: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:55.634923: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:04:00.0
+2020-01-01 22:27:55.634951: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:55.635056: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:05:00.0
+2020-01-01 22:27:55.635085: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:55.694824: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:27:55.694840: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:27:55.694848: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:27:55.694844: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:27:55.694838: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:27:55.694851: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:27:55.746625: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:27:55.746625: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:27:55.746625: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:27:55.746818: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:27:55.746818: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:27:55.746818: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:27:55.775020: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:27:55.775013: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:27:55.775017: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:27:55.775032: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:27:55.775025: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:27:55.775019: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:27:55.836602: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:27:55.836603: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:27:55.836603: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:27:55.836611: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:27:55.836611: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:27:55.836611: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:27:55.873119: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:27:55.873119: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:27:55.873226: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:27:55.873220: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:27:55.873220: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:27:55.873220: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:27:55.998343: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:27:55.998343: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:27:55.998416: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:27:55.998479: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:27:55.998477: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:27:55.998483: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:27:56.030171: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 1
+2020-01-01 22:27:56.030206: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:56.030298: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 2
+2020-01-01 22:27:56.030328: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:56.030429: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2020-01-01 22:27:56.030454: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:56.030568: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 5
+2020-01-01 22:27:56.030598: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:56.030711: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 3
+2020-01-01 22:27:56.030737: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:56.030852: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 4
+2020-01-01 22:27:56.030879: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:27:59.507737: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:27:59.507806: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      5 
+2020-01-01 22:27:59.507819: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 5:   N 
+2020-01-01 22:27:59.517832: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 5, name: Tesla V100-SXM2-16GB, pci bus id: 0035:05:00.0, compute capability: 7.0)
+2020-01-01 22:27:59.560072: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:27:59.560119: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      1 
+2020-01-01 22:27:59.560129: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 1:   N 
+2020-01-01 22:27:59.567061: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:27:59.567097: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      3 
+2020-01-01 22:27:59.567106: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 3:   N 
+2020-01-01 22:27:59.571491: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 1, name: Tesla V100-SXM2-16GB, pci bus id: 0004:05:00.0, compute capability: 7.0)
+2020-01-01 22:27:59.577994: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 3, name: Tesla V100-SXM2-16GB, pci bus id: 0035:03:00.0, compute capability: 7.0)
+2020-01-01 22:27:59.598250: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:27:59.598296: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      2 
+2020-01-01 22:27:59.598306: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 2:   N 
+2020-01-01 22:27:59.607252: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 2, name: Tesla V100-SXM2-16GB, pci bus id: 0004:06:00.0, compute capability: 7.0)
+2020-01-01 22:27:59.632613: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:27:59.632653: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2020-01-01 22:27:59.632663: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2020-01-01 22:27:59.642810: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 0, name: Tesla V100-SXM2-16GB, pci bus id: 0004:04:00.0, compute capability: 7.0)
+2020-01-01 22:27:59,643 INFO Loading data
+2020-01-01 22:27:59,662 INFO Building the model
+2020-01-01 22:27:59.667141: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:27:59.667178: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      4 
+2020-01-01 22:27:59.667187: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 4:   N 
+2020-01-01 22:27:59.675808: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 4, name: Tesla V100-SXM2-16GB, pci bus id: 0035:04:00.0, compute capability: 7.0)
+2020-01-01 22:28:00,051 INFO Writing config via pickle to /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_6/config.pkl
+2020-01-01 22:28:00,054 INFO Preparing callbacks
+2020-01-01 22:28:00,054 INFO Adding LR decay schedule: {}
+2020-01-01 22:28:00,054 INFO Beginning training
+2020-01-01 22:28:05.127872: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:05.127828: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:05.127817: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:05.127884: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:05.127879: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:05.127872: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:06.070086: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:06.070085: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:06.070085: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:06.070085: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:06.070085: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:06.070077: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+Epoch 1/4
+64/64 - 9s - loss: 0.1184 - mean_absolute_error: 0.2784
+Epoch 1/4
+64/64 - 9s - loss: 0.1195 - mean_absolute_error: 0.2784
+Epoch 1/4
+64/64 - 9s - loss: 0.0991 - mean_absolute_error: 0.2784
+Epoch 1/4
+64/64 - 9s - loss: 0.1125 - mean_absolute_error: 0.2784
+Epoch 1/4
+64/64 - 9s - loss: 0.1110 - mean_absolute_error: 0.2784
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d (Conv3D)              (None, 127, 127, 127, 16) 528       
+_________________________________________________________________
+leaky_re_lu (LeakyReLU)      (None, 127, 127, 127, 16) 0         
+_________________________________________________________________
+max_pooling3d (MaxPooling3D) (None, 63, 63, 63, 16)    0         
+_________________________________________________________________
+conv3d_1 (Conv3D)            (None, 62, 62, 62, 16)    2064      
+_________________________________________________________________
+leaky_re_lu_1 (LeakyReLU)    (None, 62, 62, 62, 16)    0         
+_________________________________________________________________
+max_pooling3d_1 (MaxPooling3 (None, 31, 31, 31, 16)    0         
+_________________________________________________________________
+conv3d_2 (Conv3D)            (None, 30, 30, 30, 16)    2064      
+_________________________________________________________________
+leaky_re_lu_2 (LeakyReLU)    (None, 30, 30, 30, 16)    0         
+_________________________________________________________________
+max_pooling3d_2 (MaxPooling3 (None, 15, 15, 15, 16)    0         
+_________________________________________________________________
+conv3d_3 (Conv3D)            (None, 14, 14, 14, 16)    2064      
+_________________________________________________________________
+leaky_re_lu_3 (LeakyReLU)    (None, 14, 14, 14, 16)    0         
+_________________________________________________________________
+max_pooling3d_3 (MaxPooling3 (None, 7, 7, 7, 16)       0         
+_________________________________________________________________
+conv3d_4 (Conv3D)            (None, 6, 6, 6, 16)       2064      
+_________________________________________________________________
+leaky_re_lu_4 (LeakyReLU)    (None, 6, 6, 6, 16)       0         
+_________________________________________________________________
+max_pooling3d_4 (MaxPooling3 (None, 3, 3, 3, 16)       0         
+_________________________________________________________________
+flatten (Flatten)            (None, 432)               0         
+_________________________________________________________________
+dropout (Dropout)            (None, 432)               0         
+_________________________________________________________________
+dense (Dense)                (None, 128)               55424     
+_________________________________________________________________
+leaky_re_lu_5 (LeakyReLU)    (None, 128)               0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 128)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                8256      
+_________________________________________________________________
+leaky_re_lu_6 (LeakyReLU)    (None, 64)                0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 4)                 260       
+_________________________________________________________________
+lambda (Lambda)              (None, 4)                 0         
+=================================================================
+Total params: 72,724
+Trainable params: 72,724
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/4
+64/64 - 9s - loss: 0.1227 - mean_absolute_error: 0.2784
+Epoch 2/4
+64/64 - 3s - loss: 0.1042 - mean_absolute_error: 0.2604
+Epoch 2/4
+64/64 - 3s - loss: 0.0871 - mean_absolute_error: 0.2604
+Epoch 2/4
+64/64 - 3s - loss: 0.0917 - mean_absolute_error: 0.2604
+Epoch 2/4
+64/64 - 3s - loss: 0.0849 - mean_absolute_error: 0.2604
+Epoch 2/4
+64/64 - 3s - loss: 0.0941 - mean_absolute_error: 0.2604
+Epoch 2/4
+64/64 - 2s - loss: 0.1088 - mean_absolute_error: 0.2604
+Epoch 3/4
+64/64 - 2s - loss: 0.0876 - mean_absolute_error: 0.2564
+Epoch 3/4
+64/64 - 2s - loss: 0.1026 - mean_absolute_error: 0.2564
+Epoch 3/4
+64/64 - 2s - loss: 0.0784 - mean_absolute_error: 0.2564
+Epoch 3/4
+64/64 - 2s - loss: 0.0822 - mean_absolute_error: 0.2564
+Epoch 3/4
+64/64 - 2s - loss: 0.0995 - mean_absolute_error: 0.2564
+Epoch 3/4
+64/64 - 2s - loss: 0.1028 - mean_absolute_error: 0.2564
+Epoch 4/4
+64/64 - 2s - loss: 0.0883 - mean_absolute_error: 0.2523
+Epoch 4/4
+64/64 - 2s - loss: 0.0905 - mean_absolute_error: 0.2523
+Epoch 4/4
+64/64 - 2s - loss: 0.0777 - mean_absolute_error: 0.2523
+Epoch 4/4
+64/64 - 2s - loss: 0.0795 - mean_absolute_error: 0.2523
+Epoch 4/4
+64/64 - 2s - loss: 0.0965 - mean_absolute_error: 0.2523
+Epoch 4/4
+64/64 - 2s - loss: 0.0962 - mean_absolute_error: 0.2523
+2020-01-01 22:28:20,391 INFO All done!
+2020-01-01 22:28:24.045468: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:24.045430: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:24.045475: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:24.046877: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:24.046895: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:24.046905: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:26.611638: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:26.611648: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:26.611648: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:26.611648: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:26.611638: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:26.611640: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:31,551 INFO Initialized rank 0 local_rank 0 size 12
+2020-01-01 22:28:31,551 INFO Initialized rank 1 local_rank 1 size 12
+2020-01-01 22:28:31,551 INFO Initialized rank 2 local_rank 2 size 12
+2020-01-01 22:28:31,551 INFO Initialized rank 5 local_rank 5 size 12
+2020-01-01 22:28:31,551 INFO Initialized rank 4 local_rank 4 size 12
+2020-01-01 22:28:31,551 INFO Initialized rank 3 local_rank 3 size 12
+2020-01-01 22:28:31,551 INFO Configuration: {'data': {'name': 'dummy', 'n_train': 64, 'n_valid': 0, 'shard': False, 'sample_shape': [128, 128, 128, 4], 'target_shape': [4], 'batch_size': 1, 'n_epochs': 4}, 'model': {'name': 'cosmoflow', 'input_shape': [128, 128, 128, 4], 'target_size': 4, 'dropout': 0.2}, 'optimizer': {'name': 'Adadelta', 'lr': 0.5, 'lr_scaling': 'none'}, 'train': {'loss': 'mse', 'metrics': ['mae']}, 'output_dir': '/gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_12'}
+2020-01-01 22:28:31.556259: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.556259: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.556316: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.556739: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.556739: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.556738: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31,564 INFO Initialized rank 6 local_rank 0 size 12
+2020-01-01 22:28:31,564 INFO Initialized rank 10 local_rank 4 size 12
+2020-01-01 22:28:31,564 INFO Initialized rank 7 local_rank 1 size 12
+2020-01-01 22:28:31,564 INFO Initialized rank 8 local_rank 2 size 12
+2020-01-01 22:28:31,564 INFO Initialized rank 9 local_rank 3 size 12
+2020-01-01 22:28:31,564 INFO Initialized rank 11 local_rank 5 size 12
+2020-01-01 22:28:31.571969: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.571969: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.571969: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.572190: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.572190: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:31.572190: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcuda.so.1
+2020-01-01 22:28:32.482338: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:04:00.0
+2020-01-01 22:28:32.482379: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.482798: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:05:00.0
+2020-01-01 22:28:32.482830: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.482943: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:06:00.0
+2020-01-01 22:28:32.482971: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.483167: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:05:00.0
+2020-01-01 22:28:32.483226: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.483320: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:03:00.0
+2020-01-01 22:28:32.483355: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.483497: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:04:00.0
+2020-01-01 22:28:32.483534: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.485637: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.485642: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.485637: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.485780: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.485777: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.485777: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.487820: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.487819: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.487820: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.487850: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.487850: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.487851: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.488649: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.488650: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.488832: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.488846: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.488846: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.488846: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.490648: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.490647: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.490647: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.490647: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.490648: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.490647: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.492257: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.492257: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.492287: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.492287: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.492287: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.492748: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.496296: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:32.496297: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:32.496302: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:32.496569: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:32.496569: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:32.496572: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:32.512406: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:06:00.0
+2020-01-01 22:28:32.512439: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.512840: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:05:00.0
+2020-01-01 22:28:32.512869: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.512977: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0004:04:00.0
+2020-01-01 22:28:32.513004: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.513199: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:05:00.0
+2020-01-01 22:28:32.513253: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.513312: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:04:00.0
+2020-01-01 22:28:32.513341: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.513451: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: Tesla V100-SXM2-16GB major: 7 minor: 0 memoryClockRate(GHz): 1.53
+pciBusID: 0035:03:00.0
+2020-01-01 22:28:32.513479: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.527597: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2020-01-01 22:28:32.527626: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.527878: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 2
+2020-01-01 22:28:32.527907: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.528046: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 1
+2020-01-01 22:28:32.528077: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.528195: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 5
+2020-01-01 22:28:32.528230: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.528366: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 3
+2020-01-01 22:28:32.528398: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.528549: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 4
+2020-01-01 22:28:32.528581: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:32.575221: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.575225: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.575221: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.575238: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.575242: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.575236: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:32.627366: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.627365: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.627365: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.627425: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.627425: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.627425: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcufft.so.10
+2020-01-01 22:28:32.702693: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.702688: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.702695: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.702699: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.702699: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.702699: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcurand.so.10
+2020-01-01 22:28:32.760048: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.760048: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.760083: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.760048: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.760083: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.760083: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusolver.so.10
+2020-01-01 22:28:32.790018: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.790017: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.790015: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.790116: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.790116: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:32.790116: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcusparse.so.10
+2020-01-01 22:28:33.218174: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:33.218174: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:33.218175: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:33.218337: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:33.218337: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:33.218336: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:33.250826: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 2
+2020-01-01 22:28:33.250856: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:33.251120: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2020-01-01 22:28:33.251150: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:33.251255: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 1
+2020-01-01 22:28:33.251280: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:33.251443: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 5
+2020-01-01 22:28:33.251480: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:33.251582: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 4
+2020-01-01 22:28:33.251609: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:33.251724: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 3
+2020-01-01 22:28:33.251752: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudart.so.10.1
+2020-01-01 22:28:33.735690: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:33.735742: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2020-01-01 22:28:33.735752: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2020-01-01 22:28:33.747279: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 0, name: Tesla V100-SXM2-16GB, pci bus id: 0004:04:00.0, compute capability: 7.0)
+2020-01-01 22:28:33,747 INFO Loading data
+2020-01-01 22:28:33.749204: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:33.749241: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      2 
+2020-01-01 22:28:33.749251: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 2:   N 
+2020-01-01 22:28:33.758315: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 2, name: Tesla V100-SXM2-16GB, pci bus id: 0004:06:00.0, compute capability: 7.0)
+2020-01-01 22:28:33,766 INFO Building the model
+2020-01-01 22:28:33.793696: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:33.793743: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      1 
+2020-01-01 22:28:33.793757: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 1:   N 
+2020-01-01 22:28:33.802238: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:33.802285: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      4 
+2020-01-01 22:28:33.802294: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 4:   N 
+2020-01-01 22:28:33.804904: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 1, name: Tesla V100-SXM2-16GB, pci bus id: 0004:05:00.0, compute capability: 7.0)
+2020-01-01 22:28:33.812412: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 4, name: Tesla V100-SXM2-16GB, pci bus id: 0035:04:00.0, compute capability: 7.0)
+2020-01-01 22:28:33.814205: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:33.814244: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      3 
+2020-01-01 22:28:33.814255: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 3:   N 
+2020-01-01 22:28:33.815378: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:33.815406: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      5 
+2020-01-01 22:28:33.815415: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 5:   N 
+2020-01-01 22:28:33.829042: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 3, name: Tesla V100-SXM2-16GB, pci bus id: 0035:03:00.0, compute capability: 7.0)
+2020-01-01 22:28:33.831139: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 5, name: Tesla V100-SXM2-16GB, pci bus id: 0035:05:00.0, compute capability: 7.0)
+2020-01-01 22:28:34,126 INFO Writing config via pickle to /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new/log_dummy_12/config.pkl
+2020-01-01 22:28:34,129 INFO Preparing callbacks
+2020-01-01 22:28:34,129 INFO Adding LR decay schedule: {}
+2020-01-01 22:28:34,129 INFO Beginning training
+2020-01-01 22:28:36.786642: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:36.786694: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      2 
+2020-01-01 22:28:36.786704: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 2:   N 
+2020-01-01 22:28:36.786642: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:36.786693: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      5 
+2020-01-01 22:28:36.786703: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 5:   N 
+2020-01-01 22:28:36.806711: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14922 MB memory) -> physical GPU (device: 2, name: Tesla V100-SXM2-16GB, pci bus id: 0004:06:00.0, compute capability: 7.0)
+2020-01-01 22:28:36.806843: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 5, name: Tesla V100-SXM2-16GB, pci bus id: 0035:05:00.0, compute capability: 7.0)
+2020-01-01 22:28:36.817305: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:36.817340: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      1 
+2020-01-01 22:28:36.817349: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 1:   N 
+2020-01-01 22:28:36.826443: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 1, name: Tesla V100-SXM2-16GB, pci bus id: 0004:05:00.0, compute capability: 7.0)
+2020-01-01 22:28:36.862562: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:36.862608: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      4 
+2020-01-01 22:28:36.862618: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 4:   N 
+2020-01-01 22:28:36.866392: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:36.866420: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      3 
+2020-01-01 22:28:36.866429: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 3:   N 
+2020-01-01 22:28:36.875653: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 4, name: Tesla V100-SXM2-16GB, pci bus id: 0035:04:00.0, compute capability: 7.0)
+2020-01-01 22:28:36.879380: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 3, name: Tesla V100-SXM2-16GB, pci bus id: 0035:03:00.0, compute capability: 7.0)
+2020-01-01 22:28:36.922869: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-01-01 22:28:36.922908: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2020-01-01 22:28:36.922919: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2020-01-01 22:28:36.932028: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14923 MB memory) -> physical GPU (device: 0, name: Tesla V100-SXM2-16GB, pci bus id: 0004:04:00.0, compute capability: 7.0)
+2020-01-01 22:28:42.074878: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.074988: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.080579: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.082728: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.082742: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.082992: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.124360: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.124363: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.124406: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.124406: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.124424: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.124419: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcublas.so.10
+2020-01-01 22:28:42.520961: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:42.566819: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:42.582408: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:42.583791: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:42.585535: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:42.590737: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:43.057684: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:43.057691: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:43.057691: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:43.057691: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:43.057684: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+2020-01-01 22:28:43.057684: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library libcudnn.so.7
+Epoch 1/4
+64/64 - 10s - loss: 0.1170 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1033 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1291 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1104 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1109 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1114 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1193 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1076 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1128 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1065 - mean_absolute_error: 0.2787
+Epoch 1/4
+64/64 - 10s - loss: 0.1263 - mean_absolute_error: 0.2787
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv3d (Conv3D)              (None, 127, 127, 127, 16) 528       
+_________________________________________________________________
+leaky_re_lu (LeakyReLU)      (None, 127, 127, 127, 16) 0         
+_________________________________________________________________
+max_pooling3d (MaxPooling3D) (None, 63, 63, 63, 16)    0         
+_________________________________________________________________
+conv3d_1 (Conv3D)            (None, 62, 62, 62, 16)    2064      
+_________________________________________________________________
+leaky_re_lu_1 (LeakyReLU)    (None, 62, 62, 62, 16)    0         
+_________________________________________________________________
+max_pooling3d_1 (MaxPooling3 (None, 31, 31, 31, 16)    0         
+_________________________________________________________________
+conv3d_2 (Conv3D)            (None, 30, 30, 30, 16)    2064      
+_________________________________________________________________
+leaky_re_lu_2 (LeakyReLU)    (None, 30, 30, 30, 16)    0         
+_________________________________________________________________
+max_pooling3d_2 (MaxPooling3 (None, 15, 15, 15, 16)    0         
+_________________________________________________________________
+conv3d_3 (Conv3D)            (None, 14, 14, 14, 16)    2064      
+_________________________________________________________________
+leaky_re_lu_3 (LeakyReLU)    (None, 14, 14, 14, 16)    0         
+_________________________________________________________________
+max_pooling3d_3 (MaxPooling3 (None, 7, 7, 7, 16)       0         
+_________________________________________________________________
+conv3d_4 (Conv3D)            (None, 6, 6, 6, 16)       2064      
+_________________________________________________________________
+leaky_re_lu_4 (LeakyReLU)    (None, 6, 6, 6, 16)       0         
+_________________________________________________________________
+max_pooling3d_4 (MaxPooling3 (None, 3, 3, 3, 16)       0         
+_________________________________________________________________
+flatten (Flatten)            (None, 432)               0         
+_________________________________________________________________
+dropout (Dropout)            (None, 432)               0         
+_________________________________________________________________
+dense (Dense)                (None, 128)               55424     
+_________________________________________________________________
+leaky_re_lu_5 (LeakyReLU)    (None, 128)               0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 128)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 64)                8256      
+_________________________________________________________________
+leaky_re_lu_6 (LeakyReLU)    (None, 64)                0         
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 64)                0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 4)                 260       
+_________________________________________________________________
+lambda (Lambda)              (None, 4)                 0         
+=================================================================
+Total params: 72,724
+Trainable params: 72,724
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/4
+64/64 - 11s - loss: 0.1162 - mean_absolute_error: 0.2787
+Epoch 2/4
+64/64 - 3s - loss: 0.1140 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.1004 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.0787 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.1064 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.1074 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.0863 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.0811 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.0874 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.0827 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.1004 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 3s - loss: 0.0950 - mean_absolute_error: 0.2590
+Epoch 2/4
+64/64 - 2s - loss: 0.0889 - mean_absolute_error: 0.2590
+Epoch 3/4
+64/64 - 2s - loss: 0.0926 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.1012 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.1093 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0913 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0921 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0913 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.1133 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0950 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0955 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0850 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0846 - mean_absolute_error: 0.2613
+Epoch 3/4
+64/64 - 2s - loss: 0.0877 - mean_absolute_error: 0.2613
+Epoch 4/4
+64/64 - 2s - loss: 0.0917 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0920 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0966 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0839 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.1018 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0828 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0822 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0966 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0894 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0714 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0879 - mean_absolute_error: 0.2531
+Epoch 4/4
+64/64 - 2s - loss: 0.0879 - mean_absolute_error: 0.2531
+2020-01-01 22:28:59,254 INFO All done!
