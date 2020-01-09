@@ -1,0 +1,24 @@
+data:
+    name: cosmo
+    data_dir: /mnt/bb/$USER
+    n_valid_files: 0
+    samples_per_file: 64
+    shard: true
+    sample_shape: [128, 128, 128, 4]
+    batch_size: 1
+    n_epochs: 4
+
+model:
+    name: cosmoflow
+    input_shape: [128, 128, 128, 4]
+    target_size: 4
+    dropout: 0.2
+
+optimizer:
+    name: Adadelta
+    lr: 0.5
+    lr_scaling: none
+
+train:
+    loss: mse
+    metrics: ['mae']
