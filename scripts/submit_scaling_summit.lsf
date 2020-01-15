@@ -30,5 +30,5 @@ export LD_LIBRARY_PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$LD_LIBRARY_PA
 echo "Train multi node scalability"
 jsrun -n${nnodes} -a6 -c42 -g6 -r1 --bind=proportional-packed:5 --launch_distribution=packed stdbuf -o0 \
     python train.py -d --rank-gpu configs/scaling.yaml \
-    --data-config "{n_train_files: 1020, data_dir: /mnt/bb/$USER, fs: true}" \
+    --data-config "{n_train_files: 1020, data_dir: /mnt/bb/$USER, local_fs: true}" \
     --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new_2020/log_1020

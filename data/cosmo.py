@@ -7,6 +7,8 @@ from functools import partial
 import numpy as np
 import tensorflow as tf
 
+import horovod.keras as hvd
+
 def _parse_data(sample_proto, shape):
     parsed_example = tf.parse_single_example(
         sample_proto,
@@ -24,12 +26,12 @@ def _parse_data(sample_proto, shape):
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       rank=0, n_ranks=1, shard=True, shuffle=False,                      
-                      fs=False, shuffle_buffer_size=128):
+                      local_fs=False, shuffle_buffer_size=128):
     # Define the dataset from the list of files
     data = tf.data.Dataset.from_tensor_slices(filenames)
-    if (shard and fs):
-        local_rank = int(os.environ['OMPI_COMM_WORLD_LOCAL_RANK'])
-        local_size = int(os.environ['OMPI_COMM_WORLD_LOCAL_SIZE'])
+    if (shard and local_fs):
+        local_rank = int(hvd.local_rank())
+        local_size = int(hvd.local_size())
         data = data.shard(num_shards=local_size, index=local_rank)
     elif (shard):
         data = data.shard(num_shards=n_ranks, index=rank)
@@ -48,7 +50,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
 def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
                  samples_per_file, batch_size, n_epochs,
                  shard=True, shuffle_train=True, shuffle_valid=False,
-                 fs=False, rank=0, n_ranks=1):
+                 local_fs=False, rank=0, n_ranks=1):
     # Ensure file counts divide evenly into worker shards
     if shard:
         n_train_files = (n_train_files // n_ranks) * n_ranks
@@ -71,7 +73,7 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
     # Construct the data pipelines
     dataset_args = dict(sample_shape=sample_shape, batch_size=batch_size,
-                        n_epochs=n_epochs, shard=shard, rank=rank, n_ranks=n_ranks, fs=fs)
+                        n_epochs=n_epochs, shard=shard, rank=rank, n_ranks=n_ranks, local_fs=local_fs)
     train_dataset = construct_dataset(filenames=train_files,
                                       shuffle=shuffle_train,
                                       **dataset_args)
