@@ -1,0 +1,22 @@
+#!/bin/bash
+# Begin LSF directives
+#BSUB -P stf011
+#BSUB -J cosmoflow
+#BSUB -o logs/cosmoflow.o%J
+#BSUB -W 0:30
+#BSUB -nnodes 170
+#BSUB -alloc_flags "nvme smt4"
+#BSUB -N
+# End LSF directives and begin shell commands
+
+nnodes=$(cat ${LSB_DJOB_HOSTFILE} | sort | uniq | grep -v login | grep -v batch | wc -l)
+
+echo "Setup env"
+export PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$PATH
+export LD_LIBRARY_PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$LD_LIBRARY_PATH
+
+echo "Train multi node scalability"
+jsrun -n${nnodes} -a6 -c42 -g6 -r1 --bind=proportional-packed:5 --launch_distribution=packed stdbuf -o0 \
+    python train.py -d --rank-gpu configs/scaling_dummy.yaml \
+    --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new_2020_dummy/log_1020
+
