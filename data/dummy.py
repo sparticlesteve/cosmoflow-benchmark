@@ -14,7 +14,7 @@ def construct_dataset(sample_shape, target_shape,
     x = tf.random.uniform([n_samples]+sample_shape)
     y = tf.random.uniform([n_samples]+target_shape)
     data = tf.data.Dataset.from_tensor_slices((x, y))
-    return data.repeat().batch(batch_size)
+    return data.repeat().batch(batch_size).prefetch(4)
 
 def get_datasets(sample_shape, target_shape, batch_size,
                  n_train, n_valid, n_epochs=None, shard=False,
