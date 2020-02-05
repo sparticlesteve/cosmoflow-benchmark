@@ -2,7 +2,7 @@
 #SBATCH -C gpu -c 10
 #SBATCH --gres=gpu:8
 #SBATCH --exclusive
-#SBATCH -t 8:00:00
+#SBATCH -t 4:00:00
 #SBATCH -J train-cgpu
 #SBATCH -d singleton
 #SBATCH -o logs/%x-%j.out
