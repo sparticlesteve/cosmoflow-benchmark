@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -C gpu
+#SBATCH -C gpu -c 10
 #SBATCH --gres=gpu:8
 #SBATCH --exclusive
 #SBATCH -t 8:00:00
