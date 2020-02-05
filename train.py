@@ -118,6 +118,7 @@ def main():
     rank, local_rank, n_ranks = init_workers(args.distributed)
     config = load_config(args.config, output_dir=args.output_dir,
                          data_config=args.data_config)
+
     os.makedirs(config['output_dir'], exist_ok=True)
     config_logging(verbose=args.verbose)
     logging.info('Initialized rank %i local_rank %i size %i',
