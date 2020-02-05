@@ -10,7 +10,6 @@
 # If using burst buffer
 ####DW persistentdw name=cosmobb
 
-mkdir -p logs
 . scripts/setup_cori.sh
 
 srun -l -u python train.py -d "$@"

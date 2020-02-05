@@ -7,7 +7,6 @@
 #SBATCH -d singleton
 #SBATCH -o logs/%x-%j.out
 
-mkdir -p logs
 . scripts/setup_cgpu.sh
 
 srun --ntasks-per-node 8 -l -u \
