@@ -5,9 +5,10 @@ data:
     #data_dir: /project/projectdirs/m3363/www/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
     #data_dir: $DW_PERSISTENT_STRIPED_cosmobb/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
-    n_train_files: 640
-    n_valid_files: 256
+    n_train: 40960 # 640 files
+    n_valid: 16384 # 256 files
     samples_per_file: 64
+    shard_type: global
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
     n_epochs: 64

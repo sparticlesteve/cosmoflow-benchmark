@@ -25,18 +25,13 @@ def _parse_data(sample_proto, shape):
     return data, label
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
-                      rank=0, n_ranks=1, shard=True, shuffle=False,                      
-                      local_fs=False, shuffle_buffer_size=128):
+                      shard=0, n_shards=1, shuffle=False,
+                      shuffle_buffer_size=128):
     if len(filenames) == 0:
         return None
     # Define the dataset from the list of files
     data = tf.data.Dataset.from_tensor_slices(filenames)
-    if (shard and local_fs):
-        local_rank = int(hvd.local_rank())
-        local_size = int(hvd.local_size())
-        data = data.shard(num_shards=local_size, index=local_rank)
-    elif (shard):
-        data = data.shard(num_shards=n_ranks, index=rank)
+    data = data.shard(num_shards=n_shards, index=shard)
     if shuffle:
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
     # Parse TFRecords
@@ -49,24 +44,45 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
     data = data.batch(batch_size, drop_remainder=True)
     return data.prefetch(4)
 
-def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
+def get_datasets(dist, data_dir, sample_shape,
+                 n_train, n_valid,
                  samples_per_file, batch_size, n_epochs,
-                 shard=True, shuffle_train=True, shuffle_valid=False,
-                 local_fs=False, rank=0, n_ranks=1):
+                 shuffle_train=True, shuffle_valid=False,
+                 shard_type='global'):
+
+    # Ensure sample counts divide into files
+    if (n_train % samples_per_file) != 0:
+        raise Exception('n_train (%i) must be divisible by %i samples/file' %
+                        (n_train, samples_per_file))
+    if (n_valid % samples_per_file) != 0:
+        raise Exception('n_valid (%i) must be divisible by %i samples/file' %
+                        (n_valid, samples_per_file))
+    n_train_files = n_train // samples_per_file
+    n_valid_files = n_valid // samples_per_file
+
+    # Determine number of data shards
+    if shard_type == 'global':
+        shard, n_shards = dist.rank, dist.size
+    elif shard_type == 'local':
+        shard, n_shards = dist.local_rank, dist.local_size
+    else:
+        shard, n_shards = 0, 1
+
     # Ensure file counts divide evenly into worker shards
-    if shard:
-        n_train_files = (n_train_files // n_ranks) * n_ranks
-        n_valid_files = (n_valid_files // n_ranks) * n_ranks
-    n_train = n_train_files * samples_per_file
-    n_valid = n_valid_files * samples_per_file
-    n_train_steps = n_train // batch_size
-    n_valid_steps = n_valid // batch_size
-    if shard:
-        n_train_steps = n_train_steps // n_ranks
-        n_valid_steps = n_valid_steps // n_ranks
-    if rank == 0:
+    if (n_train_files % n_shards) != 0:
+        raise Exception('n_train_files (%i) must be divisible by %i shards' %
+                        (n_train_files, n_shards))
+    if (n_valid_files % n_shards) != 0:
+        raise Exception('n_valid_files (%i) must be divisible by %i shards' %
+                        (n_valid_files, n_shards))
+
+    n_train_steps = n_train // n_shards // batch_size
+    n_valid_steps = n_valid // n_shards // batch_size
+    if shard == 0:
         logging.info('Loading %i training samples from %i files', n_train, n_train_files)
         logging.info('Loading %i validation samples from %i files', n_valid, n_valid_files)
+        logging.info('Splitting data into %i shard(s)', n_shards)
+
     # Select the training and validation file lists
     data_dir = os.path.expandvars(data_dir)
     all_files = sorted([os.path.join(data_dir, f) for f in os.listdir(data_dir)
@@ -76,7 +92,7 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
 
     # Construct the data pipelines
     dataset_args = dict(sample_shape=sample_shape, batch_size=batch_size,
-                        n_epochs=n_epochs, shard=shard, rank=rank, n_ranks=n_ranks, local_fs=local_fs)
+                        n_epochs=n_epochs, shard=shard, n_shards=n_shards)
     train_dataset = construct_dataset(filenames=train_files,
                                       shuffle=shuffle_train,
                                       **dataset_args)
