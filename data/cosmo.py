@@ -27,6 +27,8 @@ def _parse_data(sample_proto, shape):
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       rank=0, n_ranks=1, shard=True, shuffle=False,                      
                       local_fs=False, shuffle_buffer_size=128):
+    if len(filenames) == 0:
+        return None
     # Define the dataset from the list of files
     data = tf.data.Dataset.from_tensor_slices(filenames)
     if (shard and local_fs):
@@ -71,18 +73,16 @@ def get_datasets(data_dir, sample_shape, n_train_files, n_valid_files,
                         if f.endswith('tfrecords')])
     train_files = all_files[:n_train_files]
     valid_files = all_files[n_train_files:n_train_files+n_valid_files]
+
     # Construct the data pipelines
     dataset_args = dict(sample_shape=sample_shape, batch_size=batch_size,
                         n_epochs=n_epochs, shard=shard, rank=rank, n_ranks=n_ranks, local_fs=local_fs)
     train_dataset = construct_dataset(filenames=train_files,
                                       shuffle=shuffle_train,
                                       **dataset_args)
-    if n_valid > 0:
-        valid_dataset = construct_dataset(filenames=valid_files,
-                                          shuffle=shuffle_valid,
-                                          **dataset_args)
-    else:
-        valid_dataset = None
+    valid_dataset = construct_dataset(filenames=valid_files,
+                                      shuffle=shuffle_valid,
+                                      **dataset_args)
 
     return dict(train_dataset=train_dataset, valid_dataset=valid_dataset,
                 n_train=n_train, n_valid=n_valid, n_train_steps=n_train_steps,
