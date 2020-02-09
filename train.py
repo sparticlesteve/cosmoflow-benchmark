@@ -40,7 +40,9 @@ def parse_args():
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
     add_arg('--output-dir', help='Override output directory')
     add_arg('--data-config', action=ReadYaml,
-            help='Override data config settings')
+            help='DEPRECATED : Override data config settings')
+    add_arg('--n-train', type=int, help='Override number of training samples')
+    add_arg('--n-valid', type=int, help='Override number of validation samples')
     add_arg('-d', '--distributed', action='store_true')
     add_arg('--rank-gpu', action='store_true',
             help='Use GPU based on local rank')
@@ -63,7 +65,8 @@ def config_logging(verbose):
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level, format=log_format)
 
-def load_config(config_file, output_dir=None, data_config=None):
+def load_config(config_file, output_dir=None, data_config=None,
+                n_train=None, n_valid=None):
     """Reads the YAML config file and returns a config dictionary"""
     with open(config_file) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
@@ -74,6 +77,10 @@ def load_config(config_file, output_dir=None, data_config=None):
     # Override config from command line
     if data_config is not None:
         config['data'].update(data_config)
+    if n_train is not None:
+        config['data']['n_train'] = n_train
+    if n_valid is not None:
+        config['data']['n_valid'] = n_valid
     return config
 
 def save_config(config):
@@ -120,7 +127,8 @@ def main():
     args = parse_args()
     dist = init_workers(args.distributed)
     config = load_config(args.config, output_dir=args.output_dir,
-                         data_config=args.data_config)
+                         data_config=args.data_config,
+                         n_train=args.n_train, n_valid=args.n_valid)
 
     os.makedirs(config['output_dir'], exist_ok=True)
     config_logging(verbose=args.verbose)
