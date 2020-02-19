@@ -9,7 +9,7 @@ import tensorflow as tf
 
 import horovod.tensorflow.keras as hvd
 
-def _parse_data(sample_proto, shape):
+def _parse_data(sample_proto, shape, apply_log=False):
     parsed_example = tf.parse_single_example(
         sample_proto,
         features = {'3Dmap': tf.FixedLenFeature([], tf.string),
@@ -19,14 +19,20 @@ def _parse_data(sample_proto, shape):
     # Decode the data and normalize
     data = tf.decode_raw(parsed_example['3Dmap'], tf.float32)    
     data = tf.reshape(data, shape)
-    data /= (tf.reduce_sum(data) / np.prod(shape))
+    if apply_log:
+        # Trying logarithm of the data spectrum
+        data = tf.math.log(data + tf.constant(1.))
+    else:
+        # Traditional mean normalization
+        data /= (tf.reduce_sum(data) / np.prod(shape))
     # Decode the targets
     label = tf.decode_raw(parsed_example['unitPar'], tf.float32)
     return data, label
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
-                      shard=0, n_shards=1, shuffle=False,
-                      shuffle_buffer_size=128, prefetch=4):
+                      shard=0, n_shards=1, apply_log=False,
+                      shuffle=False, shuffle_buffer_size=128,
+                      prefetch=4):
     if len(filenames) == 0:
         return None
 
@@ -37,7 +43,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
 
     # Parse TFRecords
-    parse_data = partial(_parse_data, shape=sample_shape)
+    parse_data = partial(_parse_data, shape=sample_shape, apply_log=apply_log)
     data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
     # Parallelize reading with interleave - no benefit?
     #data = data.interleave(
