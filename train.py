@@ -128,6 +128,8 @@ def main():
 
     # Device and session configuration
     gpu = local_rank if args.rank_gpu else None
+    if gpu is not None:
+        logging.info('Taking gpu %i', gpu)
     configure_session(gpu=gpu, **config.get('device', {}))
 
     # Load the data
