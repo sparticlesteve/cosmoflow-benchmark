@@ -211,11 +211,13 @@ def main():
     timing_callback = TimingCallback()
     callbacks.append(timing_callback)
 
-    # Checkpointing and CSV logging from rank 0 only
+    # Checkpointing and logging from rank 0 only
     if dist.rank == 0:
         callbacks.append(tf.keras.callbacks.ModelCheckpoint(checkpoint_format))
         callbacks.append(tf.keras.callbacks.CSVLogger(
             os.path.join(config['output_dir'], 'history.csv'), append=args.resume))
+        callbacks.append(tf.keras.callbacks.TensorBoard(
+            os.path.join(config['output_dir'], 'tensorboard')))
 
     if dist.rank == 0:
         logging.debug('Callbacks: %s', callbacks)
