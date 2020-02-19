@@ -211,6 +211,12 @@ def main():
     timing_callback = TimingCallback()
     callbacks.append(timing_callback)
 
+    # Early stopping
+    patience = config.get('early_stopping_patience', None)
+    if patience is not None:
+        callbacks.append(tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss', min_delta=1e-5, patience=patience, verbose=1))
+
     # Checkpointing and logging from rank 0 only
     if dist.rank == 0:
         callbacks.append(tf.keras.callbacks.ModelCheckpoint(checkpoint_format))
