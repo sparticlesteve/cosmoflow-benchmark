@@ -29,17 +29,26 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       shuffle_buffer_size=128, prefetch=4):
     if len(filenames) == 0:
         return None
-    # Define the dataset from the list of files
+
+    # Define the dataset from the list of sharded, shuffled files
     data = tf.data.Dataset.from_tensor_slices(filenames)
     data = data.shard(num_shards=n_shards, index=shard)
     if shuffle:
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
+
     # Parse TFRecords
     parse_data = partial(_parse_data, shape=sample_shape)
     data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
+    # Parallelize reading with interleave - no benefit?
+    #data = data.interleave(
+    #    lambda x: tf.data.TFRecordDataset(x).map(parse_data, num_parallel_calls=1)
+    #)
+
     # Localized sample shuffling (note: imperfect global shuffling)
     if shuffle:
         data = data.shuffle(shuffle_buffer_size)
+
+    # Construct batches
     data = data.repeat(n_epochs)
     data = data.batch(batch_size, drop_remainder=True)
 
