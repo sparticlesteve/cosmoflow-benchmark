@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-test
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-hpo-${SLURM_JOB_ID}-${SLURM_STEP_ID}
 
 data:
     name: cosmo
