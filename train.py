@@ -54,12 +54,14 @@ def parse_args():
     add_arg('--optimizer', help='Override optimizer type')
     add_arg('--lr', type=float, help='Override learning rate')
 
-    # Runtime control: distributed, GPUs, resuming
+    # Other settings
     add_arg('-d', '--distributed', action='store_true')
     add_arg('--rank-gpu', action='store_true',
             help='Use GPU based on local rank')
     add_arg('--resume', action='store_true',
             help='Resume from last checkpoint')
+    add_arg('--print-fom', action='store_true',
+            help='Print parsable figure of merit')
     add_arg('-v', '--verbose', action='store_true')
     return parser.parse_args()
 
@@ -122,13 +124,16 @@ def save_config(config):
 def load_history(output_dir):
     return pd.read_csv(os.path.join(output_dir, 'history.csv'))
 
-def print_training_summary(output_dir):
+def print_training_summary(output_dir, print_fom):
     history = load_history(output_dir)
     if 'val_loss' in history.keys():
         best = history.val_loss.idxmin()
         logging.info('Best result:')
         for key in history.keys():
             logging.info('  %s: %g', key, history[key].loc[best])
+        # Figure of merit printing for HPO parsing
+        if print_fom:
+            print('FoM:', history['val_loss'].loc[best])
 
 def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
     """Finds and loads the last checkpoint matching the provided pattern"""
@@ -269,7 +274,7 @@ def main():
 
     # Print training summary
     if dist.rank == 0:
-        print_training_summary(config['output_dir'])
+        print_training_summary(config['output_dir'], args.print_fom)
 
     # Finalize
     if dist.rank == 0:
