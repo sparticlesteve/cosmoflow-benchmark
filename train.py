@@ -177,6 +177,7 @@ def main():
 
     # Save configuration to output directory
     if dist.rank == 0:
+        config['n_ranks'] = dist.size
         data_config['n_train'] = datasets['n_train']
         data_config['n_valid'] = datasets['n_valid']
         save_config(config)
