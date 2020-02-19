@@ -26,7 +26,7 @@ def _parse_data(sample_proto, shape):
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       shard=0, n_shards=1, shuffle=False,
-                      shuffle_buffer_size=128):
+                      shuffle_buffer_size=128, prefetch=4):
     if len(filenames) == 0:
         return None
     # Define the dataset from the list of files
@@ -42,7 +42,9 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
         data = data.shuffle(shuffle_buffer_size)
     data = data.repeat(n_epochs)
     data = data.batch(batch_size, drop_remainder=True)
-    return data.prefetch(4)
+
+    # Prefetch to device
+    return data.prefetch(prefetch)
 
 def get_datasets(dist, data_dir, sample_shape,
                  n_train, n_valid,
