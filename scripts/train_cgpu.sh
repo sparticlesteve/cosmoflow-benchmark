@@ -8,6 +8,8 @@
 #SBATCH -o logs/%x-%j.out
 
 . scripts/setup_cgpu.sh
+#export HOROVOD_TIMELINE=./timeline.json
 
+set -x
 srun --ntasks-per-node 8 -l -u \
     python train.py -d --rank-gpu "$@"
