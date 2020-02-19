@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-hpo-${SLURM_JOB_ID}-${SLURM_STEP_ID}
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-log-hpo-${SLURM_JOB_ID}-${SLURM_STEP_ID}
 
 data:
     name: cosmo
@@ -10,6 +10,7 @@ data:
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
     n_epochs: 64
+    apply_log: True
 
 model:
     name: configurable_cosmoflow
