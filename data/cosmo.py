@@ -9,7 +9,7 @@ import tensorflow as tf
 
 import horovod.tensorflow.keras as hvd
 
-def _parse_data(sample_proto, shape):
+def _parse_data(sample_proto, shape, apply_log=False):
     parsed_example = tf.parse_single_example(
         sample_proto,
         features = dict(x=tf.FixedLenFeature(shape, tf.float32),
@@ -17,12 +17,18 @@ def _parse_data(sample_proto, shape):
     )
     # Decode the data and normalize
     x, y = parsed_example['x'], parsed_example['y']
-    x /= (tf.reduce_sum(x) / np.prod(shape))
+    if apply_log:
+        # Trying logarithm of the data spectrum
+        x = tf.math.log(x + tf.constant(1.))
+    else:
+        # Traditional mean normalization
+        x /= (tf.reduce_sum(x) / np.prod(shape))
     return x, y
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
-                      shard=0, n_shards=1, shuffle=False,
-                      shuffle_buffer_size=128, prefetch=4):
+                      shard=0, n_shards=1, apply_log=False,
+                      shuffle=False, shuffle_buffer_size=128,
+                      prefetch=4):
     if len(filenames) == 0:
         return None
 
@@ -33,7 +39,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
 
     # Parse TFRecords
-    parse_data = partial(_parse_data, shape=sample_shape)
+    parse_data = partial(_parse_data, shape=sample_shape, apply_log=apply_log)
     data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
 
     # Parallelize reading with interleave - no benefit?

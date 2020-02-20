@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-test
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-log-hpo-${SLURM_JOB_ID}-${SLURM_STEP_ID}
 
 data:
     name: cosmo
@@ -10,18 +10,20 @@ data:
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
     n_epochs: 64
+    apply_log: True
 
 model:
     name: configurable_cosmoflow
     input_shape: [128, 128, 128, 4]
     target_size: 4
-    conv_sizes: [16, 16, 16, 16, 16]
-    fc_sizes: [128, 64]
+    conv_size: 16
+    fc1_size: 128
+    fc2_size: 64
     dropout: 0.2
 
 optimizer:
-    name: Adadelta
-    lr: 0.5
+    name: Adam
+    lr: 0.001
     lr_scaling: none
 
 train:

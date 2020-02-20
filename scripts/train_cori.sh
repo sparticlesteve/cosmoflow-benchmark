@@ -14,4 +14,4 @@
 #export HOROVOD_TIMELINE=./timeline.json
 
 set -x
-srun -l -u python train.py -d "$@"
+srun -l -u python train.py -d $@
