@@ -7,8 +7,9 @@ data:
     #target_shape: [4]
     name: cosmo
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
-    n_train_files: 65536 #131072
-    n_valid_files: 16384
+    n_train: 65536 #131072
+    n_train: 16384
+    shard_type: global
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
     n_epochs: 64
@@ -30,3 +31,4 @@ train:
     lr_schedule:
         16: 0.3
         32: 0.333
+    early_stopping_patience: 4

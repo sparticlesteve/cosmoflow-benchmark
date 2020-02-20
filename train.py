@@ -7,6 +7,7 @@ import os
 import argparse
 import logging
 import pickle
+from types import SimpleNamespace
 
 # External imports
 import yaml
@@ -39,7 +40,9 @@ def parse_args():
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
     add_arg('--output-dir', help='Override output directory')
     add_arg('--data-config', action=ReadYaml,
-            help='Override data config settings')
+            help='DEPRECATED : Override data config settings')
+    add_arg('--n-train', type=int, help='Override number of training samples')
+    add_arg('--n-valid', type=int, help='Override number of validation samples')
     add_arg('-d', '--distributed', action='store_true')
     add_arg('--rank-gpu', action='store_true',
             help='Use GPU based on local rank')
@@ -49,18 +52,21 @@ def parse_args():
     return parser.parse_args()
 
 def init_workers(distributed=False):
-    rank, local_rank, n_ranks = 0, 0, 1
     if distributed:
         hvd.init()
-        rank, local_rank, n_ranks = hvd.rank(), hvd.local_rank(), hvd.size()
-    return rank, local_rank, n_ranks
+        return SimpleNamespace(rank=hvd.rank(), size=hvd.size(),
+                               local_rank=hvd.local_rank(),
+                               local_size=hvd.local_size())
+    else:
+        return SimpleNamespace(rank=0, size=1, local_rank=0, local_size=1)
 
 def config_logging(verbose):
     log_format = '%(asctime)s %(levelname)s %(message)s'
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level, format=log_format)
 
-def load_config(config_file, output_dir=None, data_config=None):
+def load_config(config_file, output_dir=None, data_config=None,
+                n_train=None, n_valid=None):
     """Reads the YAML config file and returns a config dictionary"""
     with open(config_file) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
@@ -71,6 +77,10 @@ def load_config(config_file, output_dir=None, data_config=None):
     # Override config from command line
     if data_config is not None:
         config['data'].update(data_config)
+    if n_train is not None:
+        config['data']['n_train'] = n_train
+    if n_valid is not None:
+        config['data']['n_valid'] = n_valid
     return config
 
 def save_config(config):
@@ -115,29 +125,33 @@ def main():
 
     # Initialization
     args = parse_args()
-    rank, local_rank, n_ranks = init_workers(args.distributed)
+    dist = init_workers(args.distributed)
     config = load_config(args.config, output_dir=args.output_dir,
-                         data_config=args.data_config)
+                         data_config=args.data_config,
+                         n_train=args.n_train, n_valid=args.n_valid)
+
     os.makedirs(config['output_dir'], exist_ok=True)
     config_logging(verbose=args.verbose)
-    logging.info('Initialized rank %i local_rank %i size %i',
-                 rank, local_rank, n_ranks)
-    if rank == 0:
+    logging.info('Initialized rank %i size %i local_rank %i local_size %i',
+                 dist.rank, dist.size, dist.local_rank, dist.local_size)
+    if dist.rank == 0:
         logging.info('Configuration: %s', config)
 
     # Device and session configuration
-    gpu = local_rank if args.rank_gpu else None
+    gpu = dist.local_rank if args.rank_gpu else None
+    if gpu is not None:
+        logging.info('Taking gpu %i', gpu)
     configure_session(gpu=gpu, **config.get('device', {}))
 
     # Load the data
     data_config = config['data']
-    if rank == 0:
+    if dist.rank == 0:
         logging.info('Loading data')
-    datasets = get_datasets(rank=rank, n_ranks=n_ranks, **data_config)
+    datasets = get_datasets(dist=dist, **data_config)
     logging.debug('Datasets: %s', datasets)
 
     # Construct or reload the model
-    if rank == 0:
+    if dist.rank == 0:
         logging.info('Building the model')
     initial_epoch = 0
     checkpoint_format = os.path.join(config['output_dir'], 'checkpoint-{epoch:03d}.h5')
@@ -150,7 +164,7 @@ def main():
         # Build a new model
         model = get_model(**config['model'])
         # Configure the optimizer
-        opt = get_optimizer(n_ranks=n_ranks,
+        opt = get_optimizer(n_ranks=dist.size,
                             distributed=args.distributed,
                             **config['optimizer'])
         # Compile the model
@@ -158,17 +172,18 @@ def main():
         model.compile(optimizer=opt, loss=train_config['loss'],
                       metrics=train_config['metrics'])
 
-    if rank == 0:
+    if dist.rank == 0:
         model.summary()
 
     # Save configuration to output directory
-    if rank == 0:
+    if dist.rank == 0:
+        config['n_ranks'] = dist.size
         data_config['n_train'] = datasets['n_train']
         data_config['n_valid'] = datasets['n_valid']
         save_config(config)
 
     # Prepare the callbacks
-    if rank == 0:
+    if dist.rank == 0:
         logging.info('Preparing callbacks')
     callbacks = []
     if args.distributed:
@@ -187,7 +202,7 @@ def main():
 
     # Learning rate decay schedule
     lr_schedule = train_config.get('lr_schedule', {})
-    if rank == 0:
+    if dist.rank == 0:
         logging.info('Adding LR decay schedule: %s', lr_schedule)
     callbacks.append(tf.keras.callbacks.LearningRateScheduler(
         schedule=lambda epoch, lr: lr * lr_schedule.get(epoch, 1)))
@@ -196,19 +211,27 @@ def main():
     timing_callback = TimingCallback()
     callbacks.append(timing_callback)
 
-    # Checkpointing and CSV logging from rank 0 only
-    if rank == 0:
+    # Early stopping
+    patience = config.get('early_stopping_patience', None)
+    if patience is not None:
+        callbacks.append(tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss', min_delta=1e-5, patience=patience, verbose=1))
+
+    # Checkpointing and logging from rank 0 only
+    if dist.rank == 0:
         callbacks.append(tf.keras.callbacks.ModelCheckpoint(checkpoint_format))
         callbacks.append(tf.keras.callbacks.CSVLogger(
             os.path.join(config['output_dir'], 'history.csv'), append=args.resume))
+        callbacks.append(tf.keras.callbacks.TensorBoard(
+            os.path.join(config['output_dir'], 'tensorboard')))
 
-    if rank == 0:
+    if dist.rank == 0:
         logging.debug('Callbacks: %s', callbacks)
 
     # Train the model
-    if rank == 0:
+    if dist.rank == 0:
         logging.info('Beginning training')
-    fit_verbose = 1 if (args.verbose and rank==0) else 2
+    fit_verbose = 1 if (args.verbose and dist.rank==0) else 2
     model.fit(datasets['train_dataset'],
               steps_per_epoch=datasets['n_train_steps'],
               epochs=data_config['n_epochs'],
@@ -219,11 +242,11 @@ def main():
               verbose=fit_verbose)
 
     # Print training summary
-    if rank == 0:
+    if dist.rank == 0:
         print_training_summary(config['output_dir'])
 
     # Finalize
-    if rank == 0:
+    if dist.rank == 0:
         logging.info('All done!')
 
 if __name__ == '__main__':

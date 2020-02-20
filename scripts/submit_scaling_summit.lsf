@@ -1,0 +1,34 @@
+#!/bin/bash
+# Begin LSF directives
+#BSUB -P stf011
+#BSUB -J cosmoflow
+#BSUB -o logs/cosmoflow.o%J
+#BSUB -W 0:30
+#BSUB -nnodes 170
+#BSUB -alloc_flags "nvme smt4"
+#BSUB -N
+# End LSF directives and begin shell commands
+
+nnodes=$(cat ${LSB_DJOB_HOSTFILE} | sort | uniq | grep -v login | grep -v batch | wc -l)
+
+INPUTDIR="/gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoUniverse_2019_02_4parE/dim128_cube_nT4/"
+OUTPUTDIR="/mnt/bb/$USER/"
+
+echo "Setup mpi4py -- evn"
+export PATH=/sw/summit/python/3.7/anaconda3/5.3.0/bin/:$PATH
+export LD_LIBRARY_PATH=/sw/summit/python/3.7/anaconda3/5.3.0/bin/:$LD_LIBRARY_PATH
+
+echo "Staging data to NVME"
+jsrun -n${nnodes} -a6 -c42 -r1 python scripts/stage_data_summit.py --input_dir ${INPUTDIR} --output_dir ${OUTPUTDIR}
+echo "DONE staging"
+jsrun -n${nnodes} -a1 -c42 -r1 ls -ltrh ${OUTPUTDIR}
+
+echo "Setup TF -- evn"
+export PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$PATH
+export LD_LIBRARY_PATH=/ccs/home/atsaris/.conda/envs/myclone/bin/:$LD_LIBRARY_PATH
+
+echo "Train multi node scalability"
+jsrun -n${nnodes} -a6 -c42 -g6 -r1 --bind=proportional-packed:5 --launch_distribution=packed stdbuf -o0 \
+    python train.py -d --rank-gpu configs/scaling.yaml \
+    --data-config "{n_train_files: 1020, data_dir: /mnt/bb/$USER, local_fs: true}" \
+    --output-dir /gpfs/alpine/stf011/proj-shared/atsaris/logs/cosmoflow_2020_new_new_2020/log_1020
