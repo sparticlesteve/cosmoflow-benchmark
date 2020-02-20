@@ -1,28 +1,30 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-v2-2019-10-24
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-v2-2020-02-20
 
 data:
-    #name: dummy
-    #n_train: 512
-    #n_valid: 512
-    #target_shape: [4]
     name: cosmo
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
-    n_train: 65536 #131072
-    n_train: 16384
+    n_train: 131072
+    n_valid: 16384
     shard_type: global
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
     n_epochs: 64
+    apply_log: True
 
 model:
-    name: cosmoflow
+    name: configurable_cosmoflow
     input_shape: [128, 128, 128, 4]
     target_size: 4
-    dropout: 0.2
+    conv_size: 64
+    fc1_size: 64
+    fc2_size: 64
+    hidden_activation: LeakyReLU
+    pooling_type: MaxPool3D
+    dropout: 0.1
 
 optimizer:
-    name: Adadelta
-    lr: 0.5
+    name: Adam
+    lr: 0.0001
     lr_scaling: none
 
 train:

@@ -1,11 +1,10 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-log-hpo-${SLURM_JOB_ID}-${SLURM_STEP_ID}
+output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-v2-hpo-${SLURM_JOB_ID}-${SLURM_STEP_ID}
 
 data:
     name: cosmo
-    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
-    n_train: 40960 # 640 files
-    n_valid: 16384 # 256 files
-    samples_per_file: 64
+    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
+    n_train: 131072
+    n_valid: 16384
     shard_type: global
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
@@ -16,14 +15,16 @@ model:
     name: configurable_cosmoflow
     input_shape: [128, 128, 128, 4]
     target_size: 4
-    conv_size: 16
-    fc1_size: 128
+    conv_size: 64
+    fc1_size: 64
     fc2_size: 64
-    dropout: 0.2
+    hidden_activation: LeakyReLU
+    pooling_type: MaxPool3D
+    dropout: 0.1
 
 optimizer:
     name: Adam
-    lr: 0.001
+    lr: 0.0001
     lr_scaling: none
 
 train:
