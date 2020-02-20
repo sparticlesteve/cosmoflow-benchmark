@@ -49,14 +49,11 @@ def read_hdf5(file_path):
 def split_universe(x, size):
     """Generator function for iterating over the sub-universes"""
     n = x.shape[0] // size
-    # Loop over each sub-sample index
-    for i in range(n):
-        istart, iend = i * size, (i + 1) * size
-        for j in range(n):
-            jstart, jend = j * size, (j + 1) * size
-            for k in range(n):
-                kstart, kend = k * size, (k + 1) * size
-                yield x[istart : iend, jstart : jend, kstart : kend]
+    # Loop over each split
+    for xi in np.split(x, n, axis=0):
+        for xij in np.split(xi, n, axis=1):
+            for xijk in np.split(xij, n, axis=2):
+                yield xijk
 
 def write_record(output_file, example):
     with tf.io.TFRecordWriter(output_file) as writer:
@@ -102,9 +99,8 @@ def main():
     # Prepare output directory
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # Loop over input files
+    # Select my subset of input files
     input_files = find_files(args.input_dir, max_files=args.max_files)
-    # Split the file list by number of tasks and select my subset
     input_files = np.array_split(input_files, args.n_tasks)[args.task]
 
     # Process input files with a worker pool
