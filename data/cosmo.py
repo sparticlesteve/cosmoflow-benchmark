@@ -59,9 +59,8 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
     # Prefetch to device
     return data.prefetch(prefetch)
 
-def get_datasets(dist, data_dir, sample_shape,
-                 n_train, n_valid,
-                 samples_per_file, batch_size, n_epochs,
+def get_datasets(data_dir, sample_shape, n_train, n_valid,
+                 batch_size, n_epochs, dist, samples_per_file=1,
                  shuffle_train=True, shuffle_valid=False,
                  shard_type='global', apply_log=False):
 
