@@ -9,6 +9,7 @@ data:
     samples_per_file: 64
     shard_type: global
     sample_shape: [128, 128, 128, 4]
+    shuffle_buffer_size: 128
     batch_size: 1
     n_epochs: 64
 

@@ -27,7 +27,7 @@ def _parse_data(sample_proto, shape, apply_log=False):
 
 def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
                       shard=0, n_shards=1, apply_log=False,
-                      shuffle=False, shuffle_buffer_size=128,
+                      shuffle=False, shuffle_buffer_size=0,
                       prefetch=4):
     if len(filenames) == 0:
         return None
@@ -48,9 +48,9 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
     #)
 
     # Localized sample shuffling (note: imperfect global shuffling).
-    # No longer relevant with 1 sample per file.
-    #if shuffle:
-    #    data = data.shuffle(shuffle_buffer_size)
+    # Use if samples_per_file is greater than 1.
+    if shuffle and shuffle_buffer_size > 0:
+        data = data.shuffle(shuffle_buffer_size)
 
     # Construct batches
     data = data.repeat(n_epochs)
