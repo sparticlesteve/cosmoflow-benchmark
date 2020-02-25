@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/cosmoflow-v2-2020-02-20
+output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-v2-2020-02-20
 
 data:
     name: cosmo
@@ -12,7 +12,7 @@ data:
     apply_log: True
 
 model:
-    name: configurable_cosmoflow
+    name: cosmoflow
     input_shape: [128, 128, 128, 4]
     target_size: 4
     conv_size: 64
