@@ -65,7 +65,7 @@ def get_datasets(dist, data_dir, sample_shape,
                  n_train, n_valid,
                  samples_per_file, batch_size, n_epochs,
                  shuffle_train=True, shuffle_valid=False,
-                 shard_type='global'):
+                 shard_type='global', apply_log=False):
 
     # Ensure sample counts divide into files
     if (n_train % samples_per_file) != 0:
@@ -109,7 +109,8 @@ def get_datasets(dist, data_dir, sample_shape,
 
     # Construct the data pipelines
     dataset_args = dict(sample_shape=sample_shape, batch_size=batch_size,
-                        n_epochs=n_epochs, shard=shard, n_shards=n_shards)
+                        n_epochs=n_epochs, shard=shard, n_shards=n_shards,
+                        apply_log=apply_log)
     train_dataset = construct_dataset(filenames=train_files,
                                       shuffle=shuffle_train,
                                       **dataset_args)
