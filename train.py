@@ -146,6 +146,7 @@ def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
             logging.info('Found last checkpoint at %s', checkpoint)
             # Fix for Lambda layer warning
             import models.cosmoflow
+            import models.configurable_cosmoflow
             # Use horovod's reload to prepare the DistributedOptimizer
             if distributed:
                 model = hvd.load_model(checkpoint)
