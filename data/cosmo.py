@@ -7,8 +7,6 @@ from functools import partial
 import numpy as np
 import tensorflow as tf
 
-import horovod.tensorflow.keras as hvd
-
 def _parse_data(sample_proto, shape, apply_log=False):
     parsed_example = tf.parse_single_example(
         sample_proto,
