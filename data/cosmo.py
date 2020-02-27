@@ -8,10 +8,10 @@ import numpy as np
 import tensorflow as tf
 
 def _parse_data(sample_proto, shape, apply_log=False):
-    parsed_example = tf.parse_single_example(
+    parsed_example = tf.io.parse_single_example(
         sample_proto,
-        features = dict(x=tf.FixedLenFeature(shape, tf.float32),
-                        y=tf.FixedLenFeature([4], tf.float32))
+        features = dict(x=tf.io.FixedLenFeature(shape, tf.float32),
+                        y=tf.io.FixedLenFeature([4], tf.float32))
     )
     # Decode the data and normalize
     x, y = parsed_example['x'], parsed_example['y']
