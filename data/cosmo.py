@@ -42,7 +42,8 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
 
     # Parallelize reading with interleave - no benefit?
     #data = data.interleave(
-    #    lambda x: tf.data.TFRecordDataset(x).map(parse_data, num_parallel_calls=1)
+    #    lambda x: tf.data.TFRecordDataset(x).map(parse_data, num_parallel_calls=1),
+    #    cycle_length=4
     #)
 
     # Localized sample shuffling (note: imperfect global shuffling).
