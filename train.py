@@ -48,10 +48,11 @@ def parse_args():
     add_arg('--n-epochs', type=int, help='Override number of epochs')
 
     # Hyperparameter settings
-    add_arg('--dropout', type=float, help='Override dropout')
     add_arg('--conv-size', type=int, help='CNN size parameter')
     add_arg('--fc1-size', type=int, help='Fully-connected size parameter 1')
     add_arg('--fc2-size', type=int, help='Fully-connected size parameter 2')
+    add_arg('--hidden-activation', default='LeakyReLU')
+    add_arg('--dropout', type=float, help='Override dropout')
     add_arg('--optimizer', help='Override optimizer type')
     add_arg('--lr', type=float, help='Override learning rate')
 
@@ -108,6 +109,8 @@ def load_config(args):
         config['model']['fc1_size'] = args.fc1_size
     if args.fc2_size is not None:
         config['model']['fc2_size'] = args.fc2_size
+    if args.hidden_activation is not None:
+        config['model']['hidden_activation'] = args.hidden_activation
     if args.dropout is not None:
         config['model']['dropout'] = args.dropout
     if args.optimizer is not None:
