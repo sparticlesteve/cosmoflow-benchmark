@@ -41,6 +41,7 @@ def parse_args():
     add_arg('--output-dir', help='Override output directory')
 
     # Override data settings
+    add_arg('--data-dir', help='Override the path to input files')
     add_arg('--n-train', type=int, help='Override number of training samples')
     add_arg('--n-valid', type=int, help='Override number of validation samples')
     add_arg('--batch-size', type=int, help='Override the batch size')
@@ -89,6 +90,8 @@ def load_config(args):
     config['output_dir'] = os.path.expandvars(output_dir)
 
     # Override data config from command line
+    if args.data_dir is not None:
+        config['data']['data_dir'] = args.data_dir
     if args.n_train is not None:
         config['data']['n_train'] = args.n_train
     if args.n_valid is not None:
