@@ -18,7 +18,7 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
-
+import tensorflow.keras.backend as K
 # Local imports
 from data import get_datasets
 from models import get_model
@@ -32,6 +32,9 @@ from utils.argparse import ReadYaml
 import absl.logging
 logging.root.removeHandler(absl.logging._absl_handler)
 absl.logging._warn_preinit_stderr = False
+
+import time
+ 
 
 def parse_args():
     """Parse command line arguments"""
@@ -50,6 +53,51 @@ def parse_args():
             help='Resume from last checkpoint')
     add_arg('-v', '--verbose', action='store_true')
     return parser.parse_args()
+
+
+class PerformanceTracker(tf.keras.callbacks.Callback):
+  def __init__(self,batch_size):
+    self.start_time = 0.0
+    self.end_time = 0.0
+    self.batch_size = batch_size
+    self.samples = 0
+    self.samples_per_second = 0.0
+
+  def on_batch_end(self,batch,logs=None):
+    self.samples=self.samples+self.batch_size*hvd.size()
+
+  def on_train_begin(self, logs={}):
+    self.history = []
+
+  def on_epoch_begin(self, epoch, logs=None):
+    #"""Update the log by averaging the logged metrics from each process."""
+    self.start_time = time.time()
+
+  def on_epoch_end(self, epoch, logs=None):
+    #time each epoch
+    #print(' --> Rank ', hvd.rank(), ' hit on_epoch_begin for epoch = ', epoch, '\n')
+    #logs = logs or {}
+    #for metric in logs:
+    #  avg_metric = hvd.allreduce(tf.constant(logs[metric], name=metric))
+    #  logs[metric]=K.get_session().run(avg_metric)
+    #self.history.append(logs)
+    self.end_time = time.time()
+    self.samples_per_second = self.samples/(self.end_time-self.start_time)
+    #avg_sps= hvd.allreduce(tf.constant(self.samples_per_second),average=True)
+    sps_t = tf.constant(self.samples_per_second)
+    avg_sps = hvd.allreduce(self.samples_per_second, average=True)
+    self.samples_per_second=avg_sps  #K.get_session().run(avg_sps)
+
+    if hvd.rank()==0:
+      print('Performance Summary:')
+      print('   -> samples/second = ', self.samples_per_second, '\n')
+      print('   -> rank 0 time = ',(self.end_time-self.start_time), '\n')
+      print('   -> total samples = ', self.samples*hvd.size(), '\n')
+    self.samples_per_second = 0.0
+    self.samples = 0
+    self.start_time = 0.0
+    self.end_time = 0.0
+
 
 def init_workers(distributed=False):
     if distributed:
@@ -147,7 +195,7 @@ def main():
     data_config = config['data']
     if dist.rank == 0:
         logging.info('Loading data')
-    datasets = get_datasets(dist=dist, **data_config)
+    datasets = get_datasets(**data_config)
     logging.debug('Datasets: %s', datasets)
 
     # Construct or reload the model
@@ -199,7 +247,7 @@ def main():
         warmup_epochs = train_config.get('lr_warmup_epochs', 0)
         callbacks.append(hvd.callbacks.LearningRateWarmupCallback(
             warmup_epochs=warmup_epochs, verbose=1))
-
+        callbacks.append(PerformanceTracker(train_config.get('batch_size', 1)))
     # Learning rate decay schedule
     lr_schedule = train_config.get('lr_schedule', {})
     if dist.rank == 0:
