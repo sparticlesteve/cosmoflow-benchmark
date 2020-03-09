@@ -9,6 +9,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, backend
 import tensorflow.keras.utils as keras_utils
 
+from .layers import scale_1p2
 
 def block1(x, filters, kernel_size=3, stride=1,
            conv_shortcut=True, name=None):
@@ -201,8 +202,6 @@ def CosmoResNet(input_shape=None,
                   input_shape=input_shape, pooling=pooling,
                   **kwargs)
 
-def scale_1p2(x):
-    return x*1.2
 
 def build_model(input_shape, target_size, dropout=0):
     """Construct the CosmoFlow 3D CNN model"""

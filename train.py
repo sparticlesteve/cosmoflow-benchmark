@@ -22,6 +22,8 @@ import horovod.tensorflow.keras as hvd
 # Local imports
 from data import get_datasets
 from models import get_model
+# Fix for loading Lambda layer checkpoints
+from models.layers import *
 from utils.optimizers import get_optimizer
 from utils.callbacks import TimingCallback
 from utils.device import configure_session
@@ -153,9 +155,6 @@ def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
         checkpoint = checkpoint_format.format(epoch=epoch)
         if os.path.exists(checkpoint):
             logging.info('Found last checkpoint at %s', checkpoint)
-            # Fix for Lambda layer warning
-            import models.cosmoflow
-            import models.configurable_cosmoflow
             # Use horovod's reload to prepare the DistributedOptimizer
             if distributed:
                 model = hvd.load_model(checkpoint)

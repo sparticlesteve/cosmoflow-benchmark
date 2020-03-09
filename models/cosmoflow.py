@@ -3,9 +3,7 @@
 import tensorflow as tf
 import tensorflow.keras.layers as layers
 
-def scale_1p2(x):
-    """Simple scaling function for last Lambda layer"""
-    return x*1.2
+from .layers import scale_1p2
 
 def build_model(input_shape, target_size,
                 conv_size=16, kernel_size=2, n_conv_layers=5,
