@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-v2-2020-02-20
+output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-2020-03-05
 
 data:
     name: cosmo
@@ -7,20 +7,21 @@ data:
     n_valid: 16384
     shard_type: global
     sample_shape: [128, 128, 128, 4]
-    batch_size: 1
+    batch_size: 4
     n_epochs: 64
     apply_log: True
+    prefetch: 8
 
 model:
     name: cosmoflow
     input_shape: [128, 128, 128, 4]
     target_size: 4
-    conv_size: 64
-    fc1_size: 64
+    conv_size: 32
+    fc1_size: 128
     fc2_size: 64
     hidden_activation: LeakyReLU
     pooling_type: MaxPool3D
-    dropout: 0.1
+    dropout: 0.5
 
 optimizer:
     name: Adam
@@ -33,4 +34,4 @@ train:
     lr_schedule:
         16: 0.3
         32: 0.333
-    early_stopping_patience: 4
+    early_stopping_patience: 8

@@ -7,9 +7,10 @@ data:
     n_valid: 16384
     shard_type: global
     sample_shape: [128, 128, 128, 4]
-    batch_size: 1
-    n_epochs: 64
+    batch_size: 4
+    n_epochs: 8
     apply_log: True
+    prefetch: 8
 
 model:
     name: cosmoflow
