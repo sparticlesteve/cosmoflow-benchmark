@@ -13,7 +13,7 @@ def build_model(input_shape, target_size,
                 dropout=0):
     """Construct the CosmoFlow 3D CNN model"""
 
-    conv_args = dict(kernel_size=kernel_size, padding='valid')
+    conv_args = dict(kernel_size=kernel_size, padding='same')
     hidden_activation = getattr(layers, hidden_activation)
     pooling_type = getattr(layers, pooling_type)
 
