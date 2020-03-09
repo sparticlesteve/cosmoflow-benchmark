@@ -70,8 +70,21 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     if (n_valid % samples_per_file) != 0:
         raise Exception('n_valid (%i) must be divisible by %i samples/file' %
                         (n_valid, samples_per_file))
+
     n_train_files = n_train // samples_per_file
     n_valid_files = n_valid // samples_per_file
+
+    # Locally-staged files
+    if shard_type == 'local':
+        n_file_sets = dist.size // dist.local_size
+        if (n_train_files % n_file_sets) != 0:
+            raise Exception('%i train files not divisible by %i locals' %
+                            (n_train_files, n_file_sets))
+        if (n_valid_files % n_file_sets) != 0:
+            raise Exception('%i valid files not divisible by %i locals' %
+                            (n_valid_files, n_file_sets))
+        n_train_files = n_train_files // n_file_sets
+        n_valid_files = n_valid_files // n_file_sets
 
     # Determine number of data shards
     if shard_type == 'global':
