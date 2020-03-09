@@ -202,18 +202,36 @@ def CosmoResNet(input_shape=None,
                   input_shape=input_shape, pooling=pooling,
                   **kwargs)
 
+def MiniResNet(input_shape, pooling, **kwargs):
+    def stack_fn(x):
+        x = stack1(x, 32, 2, stride1=1, name='conv2')
+        x = stack1(x, 32, 2, name='conv3')
+        x = stack1(x, 32, 2, name='conv4')
+        return x
+    return ResNet(stack_fn, False, True, 'resnet',
+                  include_top=False, weights=None,
+                  input_shape=input_shape, pooling=pooling,
+                  **kwargs)
 
-def build_model(input_shape, target_size, dropout=0):
+def build_model(input_shape, target_size):
     """Construct the CosmoFlow 3D CNN model"""
     
     #resnet = ResNet50(input_shape=input_shape, pooling='avg')
     resnet = CosmoResNet(input_shape=input_shape, pooling='avg')
 
-    model = models.Sequential([
-        resnet,
-        layers.Flatten(),
-        layers.Dense(target_size, activation='tanh'),
-        layers.Lambda(scale_1p2)
-    ])
+    model = models.Sequential()
+    model.add(resnet)
+    model.add(layers.Flatten())
+    model.add(layers.Dense(target_size, activation='tanh'))
+    model.add(layers.Lambda(scale_1p2))
 
     return model
+
+def _test():
+    """Just a function for testing"""
+    input_shape = [128, 128, 128, 4]
+    target_size = 4
+    #resnet = ResNet50(input_shape=input_shape, pooling='avg')
+    #resnet = CosmoResNet(input_shape=input_shape, pooling='avg')
+    resnet = MiniResNet(input_shape=input_shape, pooling='avg')
+    resnet.summary()
