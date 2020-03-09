@@ -52,7 +52,7 @@ def parse_args():
     add_arg('--conv-size', type=int, help='CNN size parameter')
     add_arg('--fc1-size', type=int, help='Fully-connected size parameter 1')
     add_arg('--fc2-size', type=int, help='Fully-connected size parameter 2')
-    add_arg('--hidden-activation', default='LeakyReLU')
+    add_arg('--hidden-activation', help='Override hidden activation function')
     add_arg('--dropout', type=float, help='Override dropout')
     add_arg('--optimizer', help='Override optimizer type')
     add_arg('--lr', type=float, help='Override learning rate')
