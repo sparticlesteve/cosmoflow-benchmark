@@ -196,7 +196,7 @@ def main():
         logging.info('Building the model')
     initial_epoch = 0
     checkpoint_format = os.path.join(config['output_dir'], 'checkpoint-{epoch:03d}.h5')
-    if args.resume:
+    if args.resume and os.path.exists(checkpoint_format.format(epoch=1)):
         # Reload model from last checkpoint
         initial_epoch, model = reload_last_checkpoint(
             checkpoint_format, data_config['n_epochs'],
