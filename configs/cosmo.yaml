@@ -5,7 +5,7 @@ data:
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
     n_train: 131072
     n_valid: 16384
-    shard_type: global
+    shard: True
     sample_shape: [128, 128, 128, 4]
     batch_size: 4
     n_epochs: 64

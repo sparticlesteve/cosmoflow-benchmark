@@ -61,53 +61,43 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
 def get_datasets(data_dir, sample_shape, n_train, n_valid,
                  batch_size, n_epochs, dist=None, samples_per_file=1,
                  shuffle_train=True, shuffle_valid=False,
-                 shard_type=None, prefetch=4, apply_log=False):
+                 shard=True, staged_files=False,
+                 prefetch=4, apply_log=False):
 
-    # Ensure sample counts divide into files
-    if (n_train % samples_per_file) != 0:
-        raise Exception('n_train (%i) must be divisible by %i samples/file' %
-                        (n_train, samples_per_file))
-    if (n_valid % samples_per_file) != 0:
-        raise Exception('n_valid (%i) must be divisible by %i samples/file' %
-                        (n_valid, samples_per_file))
-
-    n_train_files = n_train // samples_per_file
-    n_valid_files = n_valid // samples_per_file
-
-    # Locally-staged files
-    if shard_type == 'local':
-        n_file_sets = dist.size // dist.local_size
-        if (n_train_files % n_file_sets) != 0:
-            raise Exception('%i train files not divisible by %i locals' %
-                            (n_train_files, n_file_sets))
-        if (n_valid_files % n_file_sets) != 0:
-            raise Exception('%i valid files not divisible by %i locals' %
-                            (n_valid_files, n_file_sets))
-        n_train_files = n_train_files // n_file_sets
-        n_valid_files = n_valid_files // n_file_sets
-
-    # Determine number of data shards
-    if shard_type == 'global':
-        shard, n_shards = dist.rank, dist.size
-    elif shard_type == 'local':
+    # Determine number of staged file sets and worker shards
+    n_file_sets = (dist.size // dist.local_size) if staged_files else 1
+    if shard and staged_files:
         shard, n_shards = dist.local_rank, dist.local_size
+    elif shard and not staged_files:
+        shard, n_shards = dist.rank, dist.size
     else:
         shard, n_shards = 0, 1
 
-    # Ensure file counts divide evenly into worker shards
-    if (n_train_files % n_shards) != 0:
-        raise Exception('n_train_files (%i) must be divisible by %i shards' %
-                        (n_train_files, n_shards))
-    if (n_valid_files % n_shards) != 0:
-        raise Exception('n_valid_files (%i) must be divisible by %i shards' %
-                        (n_valid_files, n_shards))
+    # Ensure samples divide evenly into files * local-disks * worker-shards * batches
+    n_divs = samples_per_file * n_file_sets * n_shards * batch_size
+    if (n_train % n_divs) != 0:
+        logging.error('%i training samples not divisible by %i '
+                      'samples_per_file * n_file_sets * n_shards * batch_size',
+                      n_train, n_divs)
+        raise Exception('Invalid sample counts')
+    if (n_valid % n_divs) != 0:
+        logging.error('%i validation samples not divisible by %i '
+                      'samples_per_file * n_file_sets * n_shards * batch_size',
+                      n_valid, n_divs)
+        raise Exception('Invalid sample counts')
+    n_train_files = n_train // (samples_per_file * n_file_sets)
+    n_valid_files = n_valid // (samples_per_file * n_file_sets)
+    n_train_steps = n_train // (n_file_sets * n_shards * batch_size)
+    n_valid_steps = n_valid // (n_file_sets * n_shards * batch_size)
 
-    n_train_steps = n_train // n_shards // batch_size
-    n_valid_steps = n_valid // n_shards // batch_size
     if shard == 0:
-        logging.info('Loading %i training samples from %i files', n_train, n_train_files)
-        logging.info('Loading %i validation samples from %i files', n_valid, n_valid_files)
-        logging.info('Splitting data into %i shard(s)', n_shards)
+        if staged_files:
+            logging.info('Using %i locally-staged file sets', n_file_sets)
+        logging.info('Splitting data into %i worker shards', n_shards)
+        n_train_worker = n_train // (samples_per_file * n_file_sets * n_shards)
+        n_valid_worker = n_valid // (samples_per_file * n_file_sets * n_shards)
+        logging.info('Each worker reading %i training samples and %i validation samples',
+                     n_train_worker, n_valid_worker)
 
     # Select the training and validation file lists
     data_dir = os.path.expandvars(data_dir)
@@ -128,5 +118,4 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
                                       **dataset_args)
 
     return dict(train_dataset=train_dataset, valid_dataset=valid_dataset,
-                n_train=n_train, n_valid=n_valid, n_train_steps=n_train_steps,
-                n_valid_steps=n_valid_steps)
+                n_train_steps=n_train_steps, n_valid_steps=n_valid_steps)
