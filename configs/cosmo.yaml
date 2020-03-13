@@ -1,14 +1,14 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-2020-03-05
+output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-2020-03-12
 
 data:
     name: cosmo
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
-    n_train: 131072
+    n_train: 65536 #131072
     n_valid: 16384
-    shard: True
     sample_shape: [128, 128, 128, 4]
     batch_size: 4
     n_epochs: 64
+    shard: True
     apply_log: True
     prefetch: 8
 
@@ -24,8 +24,9 @@ model:
     dropout: 0.5
 
 optimizer:
-    name: Adam
-    lr: 0.0001
+    name: SGD
+    lr: 0.01
+    momentum: 0.9
     lr_scaling: none
 
 train:
