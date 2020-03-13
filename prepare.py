@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('-i', '--input-dir',
         default='/project/projectdirs/m3363/www/cosmoUniverse_2019_05_4parE')
     parser.add_argument('-o', '--output-dir',
-        default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf')
+        default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_1')
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('--sample-size', type=int, default=128)
     parser.add_argument('--max-files', type=int)
@@ -70,7 +70,8 @@ def process_file(input_file, output_dir, sample_size):
 
         # Convert to TF example
         feature_dict = dict(
-            x=tf.train.Feature(float_list=tf.train.FloatList(value=xi.flatten())),
+            x=tf.train.Feature(bytes_list=tf.train.BytesList(value=[xi.tostring()])),
+            #x=tf.train.Feature(float_list=tf.train.FloatList(value=xi.flatten())),
             y=tf.train.Feature(float_list=tf.train.FloatList(value=y)))
         tf_example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
 
