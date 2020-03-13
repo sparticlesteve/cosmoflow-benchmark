@@ -8,19 +8,21 @@ import numpy as np
 import tensorflow as tf
 
 def _parse_data(sample_proto, shape, apply_log=False):
+    """Parse the data out of the TFRecord proto buf.
+
+    This pipeline could be sped up considerably by moving the cast and log
+    transform onto the GPU, in the model (e.g. in a keras Lambda layer).
+    """
     feature_spec = dict(x=tf.io.FixedLenFeature([], tf.string),
                         y=tf.io.FixedLenFeature([4], tf.float32))
-    #feature_spec = dict(x=tf.io.FixedLenFeature(shape, tf.float32),
-    #                    y=tf.io.FixedLenFeature([4], tf.float32))
     parsed_example = tf.io.parse_single_example(
         sample_proto, features=feature_spec)
     # Decode the data and normalize
     x = tf.decode_raw(parsed_example['x'], tf.int16)
     x = tf.cast(tf.reshape(x, shape), tf.float32)
-    #x = parsed_example['x']
     y = parsed_example['y']
     if apply_log:
-        # Trying logarithm of the data spectrum
+        # Take logarithm of the data spectrum
         x = tf.math.log(x + tf.constant(1.))
     else:
         # Traditional mean normalization
