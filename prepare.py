@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('-i', '--input-dir',
         default='/project/projectdirs/m3363/www/cosmoUniverse_2019_05_4parE')
     parser.add_argument('-o', '--output-dir',
-        default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_1')
+        default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf')
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('--sample-size', type=int, default=128)
     parser.add_argument('--max-files', type=int)

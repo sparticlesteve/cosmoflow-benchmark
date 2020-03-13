@@ -20,7 +20,7 @@ def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser()
     add_arg = parser.add_argument
-    add_arg('--data-dir', default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_1')
+    add_arg('--data-dir', default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf')
     add_arg('--n-samples', type=int, default=512)
     add_arg('--batch-size', type=int, default=4)
     add_arg('--n-epochs', type=int, default=1)
