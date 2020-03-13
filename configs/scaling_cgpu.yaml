@@ -1,0 +1,30 @@
+output_dir: $SCRATCH/cosmoflow-benchmark/${SLURM_JOB_NAME}-n${SLURM_NTASKS}
+
+data:
+    name: cosmo
+    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
+    #data_dir: $DW_PERSISTENT_STRIPED_cosmobb/cosmoUniverse_2019_02_4parE/dim128_cube_nT4
+    n_train: 512 # 8 files
+    n_valid: 0 # 0 files
+    #n_train_files: 4
+    #n_valid_files: 0
+    samples_per_file: 64
+    shard: True
+    sample_shape: [128, 128, 128, 4]
+    batch_size: 1
+    n_epochs: 4
+
+model:
+    name: cosmoflow
+    input_shape: [128, 128, 128, 4]
+    target_size: 4
+    dropout: 0.2
+
+optimizer:
+    name: Adadelta
+    lr: 0.5
+    lr_scaling: none
+
+train:
+    loss: mse
+    metrics: ['mae']
