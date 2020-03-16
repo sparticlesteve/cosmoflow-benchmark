@@ -1,6 +1,5 @@
 #!/bin/bash
 #SBATCH -C gpu -c 10
-#SBATCH -N 4
 #SBATCH --gres=gpu:8
 #SBATCH --exclusive
 #SBATCH -t 8:00:00
@@ -38,10 +37,11 @@ srun --ntasks-per-node 16 -c 4 -l -u \
 date
 
 set -x
+#export NCCL_DEBUG=INFO
 
 # Run the training
 srun --ntasks-per-node 8 -l -u \
-    python train.py -d --rank-gpu configs/cosmo.yaml \
+    python train.py -d --rank-gpu \
         --data-dir $dataDir \
         --n-train $nTrain \
         --n-valid $nValid \
