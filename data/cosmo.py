@@ -14,20 +14,26 @@ def _parse_data(sample_proto, shape, apply_log=False):
     This pipeline could be sped up considerably by moving the cast and log
     transform onto the GPU, in the model (e.g. in a keras Lambda layer).
     """
+
+    # Parse the serialized features
     feature_spec = dict(x=tf.io.FixedLenFeature([], tf.string),
                         y=tf.io.FixedLenFeature([4], tf.float32))
     parsed_example = tf.io.parse_single_example(
         sample_proto, features=feature_spec)
-    # Decode the data and normalize
+
+    # Decode the bytes data, convert to float
     x = tf.decode_raw(parsed_example['x'], tf.int16)
     x = tf.cast(tf.reshape(x, shape), tf.float32)
     y = parsed_example['y']
+
+    # Data normalization/scaling
     if apply_log:
         # Take logarithm of the data spectrum
         x = tf.math.log(x + tf.constant(1.))
     else:
         # Traditional mean normalization
         x /= (tf.reduce_sum(x) / np.prod(shape))
+
     return x, y
 
 def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
@@ -95,6 +101,13 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
                  shuffle_train=True, shuffle_valid=False,
                  shard=True, staged_files=False,
                  prefetch=4, apply_log=False):
+    """Prepare TF datasets for training and validation.
+
+    This function figures out how to split files according to local filesystems
+    (if pre-staging) and worker shards (if sharding).
+
+    Returns: A dict of the two datasets and step counts per epoch.
+    """
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1
