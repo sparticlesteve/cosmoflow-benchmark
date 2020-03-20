@@ -2,6 +2,7 @@
 
 import os
 import logging
+import glob
 from functools import partial
 
 import numpy as np
@@ -29,12 +30,37 @@ def _parse_data(sample_proto, shape, apply_log=False):
         x /= (tf.reduce_sum(x) / np.prod(shape))
     return x, y
 
-def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
+def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
+                      sample_shape, samples_per_file=1, n_file_sets=1,
                       shard=0, n_shards=1, apply_log=False,
                       shuffle=False, shuffle_buffer_size=0,
                       prefetch=4):
-    if len(filenames) == 0:
-        return None
+    """This function takes a folder with files and builds the TF dataset.
+
+    It ensures that the requested sample counts are divisible by files,
+    local-disks, worker shards, and mini-batches.
+    """
+
+    if n_samples == 0:
+        return None, 0
+
+    # Ensure samples divide evenly into files * local-disks * worker-shards * batches
+    n_divs = samples_per_file * n_file_sets * n_shards * batch_size
+    if (n_samples % n_divs) != 0:
+        logging.error('Number of samples (%i) not divisible by %i '
+                      'samples_per_file * n_file_sets * n_shards * batch_size',
+                      n_train, n_divs)
+        raise Exception('Invalid sample counts')
+
+    # Number of files and steps
+    n_files = n_samples // (samples_per_file * n_file_sets)
+    n_steps = n_samples // (n_file_sets * n_shards * batch_size)
+
+    # Find the files
+    filenames = sorted(glob.glob(os.path.join(file_dir, '*.tfrecord')))
+    if len(filenames) < n_files:
+        logging.error('Requested %i files, but only found %i', n_files, len(filenames))
+        raise Exception('Invalid file counts')
 
     # Define the dataset from the list of sharded, shuffled files
     data = tf.data.Dataset.from_tensor_slices(filenames)
@@ -62,7 +88,7 @@ def construct_dataset(filenames, batch_size, n_epochs, sample_shape,
     data = data.batch(batch_size, drop_remainder=True)
 
     # Prefetch to device
-    return data.prefetch(prefetch)
+    return data.prefetch(prefetch), n_steps
 
 def get_datasets(data_dir, sample_shape, n_train, n_valid,
                  batch_size, n_epochs, dist=None, samples_per_file=1,
@@ -79,22 +105,17 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     else:
         shard, n_shards = 0, 1
 
-    # Ensure samples divide evenly into files * local-disks * worker-shards * batches
-    n_divs = samples_per_file * n_file_sets * n_shards * batch_size
-    if (n_train % n_divs) != 0:
-        logging.error('%i training samples not divisible by %i '
-                      'samples_per_file * n_file_sets * n_shards * batch_size',
-                      n_train, n_divs)
-        raise Exception('Invalid sample counts')
-    if (n_valid % n_divs) != 0:
-        logging.error('%i validation samples not divisible by %i '
-                      'samples_per_file * n_file_sets * n_shards * batch_size',
-                      n_valid, n_divs)
-        raise Exception('Invalid sample counts')
-    n_train_files = n_train // (samples_per_file * n_file_sets)
-    n_valid_files = n_valid // (samples_per_file * n_file_sets)
-    n_train_steps = n_train // (n_file_sets * n_shards * batch_size)
-    n_valid_steps = n_valid // (n_file_sets * n_shards * batch_size)
+    # Construct the training and validation datasets
+    dataset_args = dict(batch_size=batch_size, n_epochs=n_epochs,
+                        sample_shape=sample_shape, samples_per_file=samples_per_file,
+                        n_file_sets=n_file_sets, shard=shard, n_shards=n_shards,
+                        apply_log=apply_log, prefetch=prefetch)
+    train_dataset, n_train_steps = construct_dataset(
+        file_dir=os.path.join(data_dir, 'train'),
+        n_samples=n_train, shuffle=shuffle_train, **dataset_args)
+    valid_dataset, n_valid_steps = construct_dataset(
+        file_dir=os.path.join(data_dir, 'validation'),
+        n_samples=n_valid, shuffle=shuffle_valid, **dataset_args)
 
     if shard == 0:
         if staged_files:
@@ -104,24 +125,6 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
         n_valid_worker = n_valid // (samples_per_file * n_file_sets * n_shards)
         logging.info('Each worker reading %i training samples and %i validation samples',
                      n_train_worker, n_valid_worker)
-
-    # Select the training and validation file lists
-    data_dir = os.path.expandvars(data_dir)
-    all_files = sorted([os.path.join(data_dir, f) for f in os.listdir(data_dir)
-                        if f.endswith('.tfrecord')])
-    train_files = all_files[:n_train_files]
-    valid_files = all_files[n_train_files:n_train_files+n_valid_files]
-
-    # Construct the data pipelines
-    dataset_args = dict(sample_shape=sample_shape, batch_size=batch_size,
-                        n_epochs=n_epochs, shard=shard, n_shards=n_shards,
-                        prefetch=prefetch, apply_log=apply_log)
-    train_dataset = construct_dataset(filenames=train_files,
-                                      shuffle=shuffle_train,
-                                      **dataset_args)
-    valid_dataset = construct_dataset(filenames=valid_files,
-                                      shuffle=shuffle_valid,
-                                      **dataset_args)
 
     return dict(train_dataset=train_dataset, valid_dataset=valid_dataset,
                 n_train_steps=n_train_steps, n_valid_steps=n_valid_steps)
