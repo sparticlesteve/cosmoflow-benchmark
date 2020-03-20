@@ -9,8 +9,8 @@
 # This script defines a training job using pre-staged data on Cori-GPU local NVME.
 
 # Configuration
-nTrain=131072
-nValid=32768
+nTrain=262144 #131072
+nValid=65536 #32768
 sourceDir=/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
 dataDir=/tmp/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
 

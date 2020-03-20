@@ -1,16 +1,16 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-2020-03-12
+output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-2020-03-20
 
 data:
     name: cosmo
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
-    n_train: 131072
-    n_valid: 32768
+    n_train: 262144 #131072
+    n_valid: 65536 #32768
     sample_shape: [128, 128, 128, 4]
     batch_size: 4
     n_epochs: 64
     shard: True
     apply_log: True
-    prefetch: 8
+    prefetch: 4
 
 model:
     name: cosmoflow
@@ -33,6 +33,7 @@ train:
     loss: mse
     metrics: ['mae']
     lr_schedule:
-        16: 0.3
-        32: 0.333
+        32: 0.1
+        #16: 0.3
+        #32: 0.333
     early_stopping_patience: 8
