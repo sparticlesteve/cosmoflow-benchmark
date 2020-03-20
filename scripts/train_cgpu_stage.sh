@@ -19,9 +19,8 @@ dataDir=/tmp/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
 set -e
 
 # Prepare data staging
-nStage=$(( nTrain + nValid ))
 srun --ntasks-per-node 1 rm -rf $dataDir
-srun --ntasks-per-node 1 mkdir -p $dataDir
+srun --ntasks-per-node 1 mkdir -p $dataDir/train $dataDir/validation
 date
 echo "Pre-staging $nTrain training and $nValid validation samples"
 echo "  from $sourceDir"
@@ -33,7 +32,9 @@ echo "  into $dataDir"
 
 # Stage the data with mpi4py
 srun --ntasks-per-node 16 -c 4 -l -u \
-    python scripts/stage_data.py -n $nStage $sourceDir $dataDir
+    python scripts/stage_data.py -n $nTrain $sourceDir/train $dataDir/train
+srun --ntasks-per-node 16 -c 4 -l -u \
+    python scripts/stage_data.py -n $nTrain $sourceDir/validation $dataDir/validation
 date
 
 set -x
