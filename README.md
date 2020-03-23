@@ -7,11 +7,20 @@ for benchmarking. It is written in TensorFlow with the Keras API and uses
 
 ## Datasets
 
-A dataset tarball is available via globus at:
+Globus is the current recommended way to transfer the dataset locally.
+There is a globus endpoint at:
 
 https://app.globus.org/file-manager?origin_id=d0b1b73a-efd3-11e9-993f-0a8c187e8c12&origin_path=%2F
 
-This is a 2.2 TB tar file containing 1027 `TFRecord` files, each representing a simulated universe with 64 sub-volume samples.
+The latest pre-processed dataset in TFRecord format is in the
+`cosmoUniverse_2019_05_4parE_tf` folder, which contains training and validation
+subfolders. There are currently 262144 samples for training and 65536 samples
+for validation/testing.
+
+For the previous dataset which was used for the 2020 ECP Annual Meeting results,
+you can use the `cosmoUniverse_2019_02_4parE_dim128_cube_nT4.tar` tarball.
+This is a 2.2 TB tar file containing 1027 `TFRecord` files, each representing
+a simulated universe with 64 sub-volume samples.
 
 ## Running the benchmark
 
