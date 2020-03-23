@@ -7,7 +7,7 @@ data:
     n_train: 256 # 4 files
     n_valid: 0 # 0 files
     samples_per_file: 64
-    shard_type: global
+    shard: True
     sample_shape: [128, 128, 128, 4]
     batch_size: 1
     n_epochs: 4

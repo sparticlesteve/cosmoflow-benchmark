@@ -4,7 +4,7 @@ data:
     name: dummy
     n_train: 256
     n_valid: 0
-    shard_type: none
+    shard: True
     sample_shape: [128, 128, 128, 4]
     target_shape: [4]
     batch_size: 1
