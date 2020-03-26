@@ -74,16 +74,8 @@ class PerformanceTracker(tf.keras.callbacks.Callback):
     self.start_time = time.time()
 
   def on_epoch_end(self, epoch, logs=None):
-    #time each epoch
-    #print(' --> Rank ', hvd.rank(), ' hit on_epoch_begin for epoch = ', epoch, '\n')
-    #logs = logs or {}
-    #for metric in logs:
-    #  avg_metric = hvd.allreduce(tf.constant(logs[metric], name=metric))
-    #  logs[metric]=K.get_session().run(avg_metric)
-    #self.history.append(logs)
     self.end_time = time.time()
     self.samples_per_second = self.samples/(self.end_time-self.start_time)
-    #avg_sps= hvd.allreduce(tf.constant(self.samples_per_second),average=True)
     sps_t = tf.constant(self.samples_per_second)
     avg_sps = hvd.allreduce(self.samples_per_second, average=True)
     self.samples_per_second=avg_sps  #K.get_session().run(avg_sps)

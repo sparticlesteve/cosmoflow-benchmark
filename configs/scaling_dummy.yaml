@@ -4,15 +4,14 @@ data:
     name: dummy
     n_train: 256
     n_valid: 0
-    shard_type: none
-    sample_shape: [128, 128, 128, 4]
+    sample_shape: [64, 64, 64, 4]
     target_shape: [4]
     batch_size: 1
     n_epochs: 4
 
 model:
     name: cosmoflow
-    input_shape: [128, 128, 128, 4]
+    input_shape: [64, 64, 64, 4]
     target_size: 4
     dropout: 0.2
 
