@@ -64,9 +64,9 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
 
     # Find the files
     filenames = sorted(glob.glob(os.path.join(file_dir, '*.tfrecord')))
-    if len(filenames) < n_files:
-        logging.error('Requested %i files, but only found %i', n_files, len(filenames))
-        raise Exception('Invalid file counts')
+    assert (0 <= n_files) and (n_files <= len(filenames)), (
+        'Requested %i files, %i available' % (n_files, len(filenames)))
+    filenames = filenames[:n_files]
 
     # Define the dataset from the list of sharded, shuffled files
     data = tf.data.Dataset.from_tensor_slices(filenames)
