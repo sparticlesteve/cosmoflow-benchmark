@@ -39,8 +39,8 @@ def _parse_data(sample_proto, shape, apply_log=False):
 def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
                       sample_shape, samples_per_file=1, n_file_sets=1,
                       shard=0, n_shards=1, apply_log=False,
-                      shuffle=False, shuffle_buffer_size=0,
-                      prefetch=4):
+                      randomize_files=False, shuffle=False,
+                      shuffle_buffer_size=0, prefetch=4):
     """This function takes a folder with files and builds the TF dataset.
 
     It ensures that the requested sample counts are divisible by files,
@@ -66,6 +66,8 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
     filenames = sorted(glob.glob(os.path.join(file_dir, '*.tfrecord')))
     assert (0 <= n_files) and (n_files <= len(filenames)), (
         'Requested %i files, %i available' % (n_files, len(filenames)))
+    if randomize_files:
+        np.random.shuffle(filenames)
     filenames = filenames[:n_files]
 
     # Define the dataset from the list of sharded, shuffled files
