@@ -7,6 +7,18 @@ for benchmarking. It is written in TensorFlow with the Keras API and uses
 
 ## Datasets
 
+The dataset we use for this benchmark comes from simulations run by the
+ExaLearn group and hosted at NERSC. The following web portal describes the
+technical content of the dataset and provides links to the raw data.
+
+https://portal.nersc.gov/project/m3363/
+
+For this benchmark we currently use a preprocessed version of the dataset which
+generates crops of size (128, 128, 128, 4) and stores in TFRecord format.
+This preprocessing is done using the [prepare.py](prepare.py) script included
+in this package. We describe here how to get access to this processed dataset,
+but please refer to the ExaLearn web portal for additional technical details.
+
 Globus is the current recommended way to transfer the dataset locally.
 There is a globus endpoint at:
 
