@@ -27,7 +27,7 @@ https://app.globus.org/file-manager?origin_id=d0b1b73a-efd3-11e9-993f-0a8c187e8c
 The latest pre-processed dataset in TFRecord format is in the
 `cosmoUniverse_2019_05_4parE_tf` folder, which contains training and validation
 subfolders. There are currently 262144 samples for training and 65536 samples
-for validation/testing.
+for validation/testing. The combined size of the dataset is roughly 5.2 TB.
 
 For the previous dataset which was used for the 2020 ECP Annual Meeting results,
 you can use the `cosmoUniverse_2019_02_4parE_dim128_cube_nT4.tar` tarball.
