@@ -181,6 +181,7 @@ def main():
     # Construct or reload the model
     if dist.rank == 0:
         logging.info('Building the model')
+    train_config = config['train']
     initial_epoch = 0
     checkpoint_format = os.path.join(config['output_dir'], 'checkpoint-{epoch:03d}.h5')
     if args.resume and os.path.exists(checkpoint_format.format(epoch=1)):
@@ -196,7 +197,6 @@ def main():
                             distributed=args.distributed,
                             **config['optimizer'])
         # Compile the model
-        train_config = config['train']
         model.compile(optimizer=opt, loss=train_config['loss'],
                       metrics=train_config['metrics'])
 
@@ -221,7 +221,6 @@ def main():
         callbacks.append(hvd.callbacks.MetricAverageCallback())
 
         # Learning rate warmup
-        train_config = config['train']
         warmup_epochs = train_config.get('lr_warmup_epochs', 0)
         callbacks.append(hvd.callbacks.LearningRateWarmupCallback(
             warmup_epochs=warmup_epochs, verbose=1))
