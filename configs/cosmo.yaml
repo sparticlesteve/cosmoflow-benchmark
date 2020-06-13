@@ -25,14 +25,15 @@ model:
 
 optimizer:
     name: SGD
-    lr: 0.01
     momentum: 0.9
-    lr_scaling: none
+
+lr_schedule:
+    base_lr: 0.01
+    decay_schedule:
+        32: 0.5
+        64: 0.25
 
 train:
     loss: mse
     metrics: ['mae']
-    lr_schedule:
-        32: 0.1
-        64: 0.1
     early_stopping_patience: 8

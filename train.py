@@ -24,7 +24,7 @@ from data import get_datasets
 from models import get_model
 # Fix for loading Lambda layer checkpoints
 from models.layers import *
-from utils.optimizers import get_optimizer
+from utils.optimizers import get_optimizer, get_lr_schedule
 from utils.callbacks import TimingCallback
 from utils.device import configure_session
 from utils.argparse import ReadYaml
@@ -193,8 +193,7 @@ def main():
         # Build a new model
         model = get_model(**config['model'])
         # Configure the optimizer
-        opt = get_optimizer(n_ranks=dist.size,
-                            distributed=args.distributed,
+        opt = get_optimizer(distributed=args.distributed,
                             **config['optimizer'])
         # Compile the model
         model.compile(optimizer=opt, loss=train_config['loss'],
@@ -220,17 +219,12 @@ def main():
         # Average metrics across workers
         callbacks.append(hvd.callbacks.MetricAverageCallback())
 
-        # Learning rate warmup
-        warmup_epochs = train_config.get('lr_warmup_epochs', 0)
-        callbacks.append(hvd.callbacks.LearningRateWarmupCallback(
-            warmup_epochs=warmup_epochs, verbose=1))
-
     # Learning rate decay schedule
-    lr_schedule = train_config.get('lr_schedule', {})
-    if dist.rank == 0:
-        logging.info('Adding LR decay schedule: %s', lr_schedule)
-    callbacks.append(tf.keras.callbacks.LearningRateScheduler(
-        schedule=lambda epoch, lr: lr * lr_schedule.get(epoch, 1)))
+    if 'lr_schedule' in config:
+        global_batch_size = data_config['batch_size'] * dist.size
+        callbacks.append(tf.keras.callbacks.LearningRateScheduler(
+            get_lr_schedule(global_batch_size=global_batch_size,
+                            **config['lr_schedule'])))
 
     # Timing
     timing_callback = TimingCallback()
