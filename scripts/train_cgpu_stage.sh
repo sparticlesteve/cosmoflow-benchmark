@@ -34,7 +34,7 @@ echo "  into $dataDir"
 srun --ntasks-per-node 16 -c 4 -l -u \
     python scripts/stage_data.py -n $nTrain $sourceDir/train $dataDir/train
 srun --ntasks-per-node 16 -c 4 -l -u \
-    python scripts/stage_data.py -n $nTrain $sourceDir/validation $dataDir/validation
+    python scripts/stage_data.py -n $nValid $sourceDir/validation $dataDir/validation
 date
 
 set -x
