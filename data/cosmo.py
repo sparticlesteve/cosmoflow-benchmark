@@ -55,7 +55,7 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
     if (n_samples % n_divs) != 0:
         logging.error('Number of samples (%i) not divisible by %i '
                       'samples_per_file * n_file_sets * n_shards * batch_size',
-                      n_train, n_divs)
+                      n_samples, n_divs)
         raise Exception('Invalid sample counts')
 
     # Number of files and steps
