@@ -50,8 +50,7 @@ def parse_args():
     add_arg('--batch-size', type=int, help='Override the batch size')
     add_arg('--n-epochs', type=int, help='Override number of epochs')
     add_arg('--apply-log', type=int, choices=[0, 1], help='Apply log transform to data')
-    add_arg('--staged-files', type=int, choices=[0, 1],
-            help='Specify if you are pre-staging subsets of data to local FS')
+    add_arg('--stage-dir', help='Local directory to stage data to before training')
 
     # Hyperparameter settings
     add_arg('--conv-size', type=int, help='CNN size parameter')
@@ -109,8 +108,8 @@ def load_config(args):
         config['data']['n_epochs'] = args.n_epochs
     if args.apply_log is not None:
         config['data']['apply_log'] = bool(args.apply_log)
-    if args.staged_files is not None:
-        config['data']['staged_files'] = bool(args.staged_files)
+    if args.stage_dir is not None:
+        config['data']['stage_dir'] = args.stage_dir
 
     # Hyperparameters
     if args.conv_size is not None:
