@@ -1,16 +1,17 @@
 #!/bin/bash
 #SBATCH -C gpu -c 10
-#SBATCH --gres=gpu:8
+#SBATCH --ntasks-per-node 8
+#SBATCH --gpus-per-task 1
 #SBATCH --exclusive
-#SBATCH -t 8:00:00
+#SBATCH -t 4:00:00
 #SBATCH -J train-cgpu
 #SBATCH -o logs/%x-%j.out
 
 # This script defines a training job using pre-staged data on Cori-GPU local NVME.
 
 # Configuration
-nTrain=262144 #131072
-nValid=65536 #32768
+nTrain=262144
+nValid=65536
 sourceDir=/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
 dataDir=/tmp/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf
 

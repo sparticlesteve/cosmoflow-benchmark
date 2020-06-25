@@ -28,10 +28,13 @@ optimizer:
     momentum: 0.9
 
 lr_schedule:
-    base_lr: 0.01
+    base_lr: 0.001
+    scaling: linear
+    base_batch_size: 64
+    n_warmup_epochs: 4
     decay_schedule:
-        32: 0.1
-        64: 0.01
+        32: 0.25
+        64: 0.125
 
 train:
     loss: mse
