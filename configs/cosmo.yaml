@@ -30,8 +30,8 @@ optimizer:
 lr_schedule:
     base_lr: 0.01
     decay_schedule:
-        32: 0.5
-        64: 0.25
+        32: 0.1
+        64: 0.01
 
 train:
     loss: mse
