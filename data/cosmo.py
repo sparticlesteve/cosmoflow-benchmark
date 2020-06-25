@@ -99,7 +99,7 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
     return data.prefetch(prefetch), n_steps
 
 def get_datasets(data_dir, sample_shape, n_train, n_valid,
-                 batch_size, n_epochs, dist=None, samples_per_file=1,
+                 batch_size, n_epochs, dist, samples_per_file=1,
                  shuffle_train=True, shuffle_valid=False,
                  shard=True, staged_files=False,
                  prefetch=4, apply_log=False):
