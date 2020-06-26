@@ -1,4 +1,4 @@
-output_dir: $SCRATCH/cosmoflow-benchmark/results/cosmoflow-000
+output_dir: results/cosmo-000
 
 data:
     name: cosmo
