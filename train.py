@@ -18,6 +18,7 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
+from mlperf_logging import mllog
 
 # Local imports
 from data import get_datasets
@@ -25,7 +26,7 @@ from models import get_model
 # Fix for loading Lambda layer checkpoints
 from models.layers import *
 from utils.optimizers import get_optimizer, get_lr_schedule
-from utils.callbacks import TimingCallback
+from utils.callbacks import TimingCallback, MLPerfLoggingCallback
 from utils.device import configure_session
 from utils.argparse import ReadYaml
 from utils.checkpoints import reload_last_checkpoint
@@ -171,6 +172,12 @@ def main():
         logging.info('Taking gpu %i', gpu)
     configure_session(gpu=gpu, **config.get('device', {}))
 
+    # Start MLPerf logging
+    if dist.rank == 0:
+        mllog.config(filename=os.path.join(config['output_dir'], 'mlperf.log'))
+        mllogger = mllog.get_mllogger()
+        mllogger.start(key=mllog.constants.RUN_START)
+
     # Load the data
     data_config = config['data']
     if dist.rank == 0:
@@ -237,6 +244,7 @@ def main():
             os.path.join(config['output_dir'], 'history.csv'), append=args.resume))
         callbacks.append(tf.keras.callbacks.TensorBoard(
             os.path.join(config['output_dir'], 'tensorboard')))
+        callbacks.append(MLPerfLoggingCallback())
 
     # Early stopping
     patience = config.get('early_stopping_patience', None)
@@ -259,6 +267,10 @@ def main():
               callbacks=callbacks,
               initial_epoch=initial_epoch,
               verbose=fit_verbose)
+
+    # Stop MLPerf timer
+    if dist.rank == 0:
+        mllogger.end(key=mllog.constants.RUN_STOP)
 
     # Print training summary
     if dist.rank == 0:

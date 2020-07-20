@@ -7,6 +7,16 @@ from time import time
 
 # Externals
 import tensorflow as tf
+from mlperf_logging import mllog
+
+class MLPerfLoggingCallback(tf.keras.callbacks.Callback):
+    """A Keras Callback for logging MLPerf results"""
+    def __init__(self):
+        self.mllogger = mllog.get_mllogger()
+
+    def on_epoch_end(self, epoch, logs={}):
+        val_mae = logs['val_mean_absolute_error']
+        self.mllogger.event(key='eval_mae', value=val_mae)
 
 class TimingCallback(tf.keras.callbacks.Callback):
     """A Keras Callback which records the time of each epoch"""
