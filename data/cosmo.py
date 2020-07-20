@@ -1,12 +1,18 @@
 """CosmoFlow dataset specification"""
 
+# System imports
 import os
 import logging
 import glob
 from functools import partial
 
+# External imports
 import numpy as np
 import tensorflow as tf
+import horovod.tensorflow.keras as hvd
+
+# Local imports
+from utils.staging import stage_files
 
 def _parse_data(sample_proto, shape, apply_log=False):
     """Parse the data out of the TFRecord proto buf.
@@ -99,17 +105,35 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
     return data.prefetch(prefetch), n_steps
 
 def get_datasets(data_dir, sample_shape, n_train, n_valid,
-                 batch_size, n_epochs, dist=None, samples_per_file=1,
+                 batch_size, n_epochs, dist, samples_per_file=1,
                  shuffle_train=True, shuffle_valid=False,
-                 shard=True, staged_files=False,
+                 shard=True, stage_dir=None,
                  prefetch=4, apply_log=False):
     """Prepare TF datasets for training and validation.
 
-    This function figures out how to split files according to local filesystems
-    (if pre-staging) and worker shards (if sharding).
+    This function will perform optional staging of data chunks to local
+    filesystems. It also figures out how to split files according to local
+    filesystems (if pre-staging) and worker shards (if sharding).
 
     Returns: A dict of the two datasets and step counts per epoch.
     """
+
+    # Local data staging
+    if stage_dir is not None:
+        staged_files = True
+        # Stage training data
+        stage_files(os.path.join(data_dir, 'train'),
+                    os.path.join(stage_dir, 'train'),
+                    n_files=n_train, rank=dist.rank, size=dist.size)
+        # Stage validation data
+        stage_files(os.path.join(data_dir, 'validation'),
+                    os.path.join(stage_dir, 'validation'),
+                    n_files=n_valid, rank=dist.rank, size=dist.size)
+        data_dir = stage_dir
+
+        # Barrier to ensure all workers are done transferring
+        if dist.size > 0:
+            hvd.allreduce([], name="Barrier")
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1
