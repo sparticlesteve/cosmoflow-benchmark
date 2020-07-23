@@ -5,6 +5,9 @@ This is a an implementation of the
 for benchmarking. It is written in TensorFlow with the Keras API and uses
 [Horovod](https://github.com/horovod/horovod) for distributed training.
 
+You can find the previous TensorFlow implementation which accompanied the CosmoFlow paper at
+https://github.com/NERSC/CosmoFlow
+
 ## Datasets
 
 The dataset we use for this benchmark comes from simulations run by the
