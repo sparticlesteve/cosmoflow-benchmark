@@ -1,3 +1,4 @@
+‘Regression of 3D Sky Map to Cosmological Parameters (CosmoFlow)’
 Copyright (c) 2020, The Regents of the University of California, through
 Lawrence Berkeley National Laboratory (subject to receipt of any required
 approvals from the U.S. Dept. of Energy). All rights reserved. Redistribution
