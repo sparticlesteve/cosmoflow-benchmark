@@ -7,6 +7,7 @@ from functools import partial
 
 import numpy as np
 import tensorflow as tf
+from mlperf_logging import mllog
 
 def _parse_data(sample_proto, shape, apply_log=False):
     """Parse the data out of the TFRecord proto buf.
@@ -110,6 +111,10 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
 
     Returns: A dict of the two datasets and step counts per epoch.
     """
+
+    # MLPerf logging
+    mllogger = mllog.get_mllogger()
+    mllogger.event(key=mllog.constants.GLOBAL_BATCH_SIZE, value=batch_size*dist.size)
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1

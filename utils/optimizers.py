@@ -9,6 +9,7 @@ from functools import partial
 # Externals
 from tensorflow import keras
 import horovod.tensorflow.keras as hvd
+from mlperf_logging import mllog
 
 def _lr_schedule(epoch, base_lr, peak_lr, n_warmup_epochs, decay_schedule={}):
     """Learning rate schedule function.
@@ -41,6 +42,12 @@ def get_lr_schedule(base_lr, global_batch_size, base_batch_size=None,
         peak_lr = base_lr * math.sqrt(global_batch_size / base_batch_size)
     else:
         peak_lr = base_lr
+
+    # MLPerf logging
+    mllogger = mllog.get_mllogger()
+    mllogger.event(key=mllog.constants.OPT_BASE_LR, value=base_lr)
+    mllogger.event(key="opt_peak_learning_rate", value=peak_lr)
+    mllogger.event(key=mllog.constants.OPT_LR_WARMUP_EPOCHS, value=n_warmup_epochs)
     return partial(_lr_schedule, base_lr=base_lr, peak_lr=peak_lr,
                    n_warmup_epochs=n_warmup_epochs,
                    decay_schedule=decay_schedule)
@@ -48,6 +55,10 @@ def get_lr_schedule(base_lr, global_batch_size, base_batch_size=None,
 def get_optimizer(name, distributed=False, **opt_args):
                   #lr, lr_scaling='linear', n_ranks=1,
     """Configure the optimizer"""
+
+    # MLPerf logging
+    mllogger = mllog.get_mllogger()
+    mllogger.event(key=mllog.constants.OPT_NAME, value=name)
 
     # Construct the optimizer
     OptType = getattr(keras.optimizers, name)
