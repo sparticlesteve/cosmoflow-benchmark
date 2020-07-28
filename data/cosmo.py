@@ -134,6 +134,8 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
         # Barrier to ensure all workers are done transferring
         if dist.size > 0:
             hvd.allreduce([], name="Barrier")
+    else:
+        staged_files = False
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1
