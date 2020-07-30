@@ -118,6 +118,8 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     Returns: A dict of the two datasets and step counts per epoch.
     """
 
+    data_dir = os.path.expandvars(data_dir)
+
     # Local data staging
     if stage_dir is not None:
         staged_files = True
