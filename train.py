@@ -14,11 +14,13 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 # Suppress TF warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
 import timemory
-
+from timemory.profiler import profile
+from timemory.bundle import auto_timer
+from timemory.util import marker
 # Local imports
 from data import get_datasets
 from models import get_model
@@ -32,6 +34,23 @@ from utils.argparse import ReadYaml
 import absl.logging
 logging.root.removeHandler(absl.logging._absl_handler)
 absl.logging._warn_preinit_stderr = False
+
+#timemory settings
+# set verbose output to 1
+timemory.settings.verbose = 1
+# disable timemory debug prints
+timemory.settings.debug = False
+# set output data format output to json
+timemory.settings.json_output = False
+# disable mpi_thread mode
+timemory.settings.mpi_thread  = False
+# enable timemory dart output
+timemory.settings.dart_output = True
+timemory.settings.dart_count = 1
+# disable timemory banner
+timemory.settings.banner = True
+#timemory.settings.flat_profile = False
+#timemory.settings.timeline_profile = False
 
 def parse_args():
     """Parse command line arguments"""
@@ -111,8 +130,8 @@ def reload_last_checkpoint(checkpoint_format, n_epochs, distributed):
             return epoch, model
     raise Exception('Unable to find a checkpoint file at %s' % checkpoint_format)
 
-@timemory.util.auto_tuple([getattr(timemory.component, c) for c in
-    ['thread_cpu_clock', 'page_rss', 'priority_context_switch', 'read_bytes', 'written_bytes']])
+#@timemory.util.auto_tuple([getattr(timemory.component, c) for c in
+#    ['thread_cpu_clock', 'page_rss', 'priority_context_switch', 'read_bytes', 'written_bytes']])
 def main():
     """Main function"""
 
@@ -212,14 +231,48 @@ def main():
     if rank == 0:
         logging.info('Beginning training')
     fit_verbose = 1 if (args.verbose and rank==0) else 2
-    model.fit(datasets['train_dataset'],
-              steps_per_epoch=datasets['n_train_steps'],
-              epochs=data_config['n_epochs'],
-              validation_data=datasets['valid_dataset'],
-              validation_steps=datasets['n_valid_steps'],
-              callbacks=callbacks,
-              initial_epoch=initial_epoch,
-              verbose=fit_verbose)
+
+    #cray added
+    #timemory.enable_signal_detection()
+    #timemory.settings.width = 12
+    #timemory.settings.precision = 6
+
+    #with profile(["wall_clock", "user_clock", "system_clock", "cpu_util",
+    #              "peak_rss", "thread_cpu_clock", "thread_cpu_util"]):
+    #id = timemory.start_mpip()
+
+    #with marker(['wall_clock','cpu_util','peak_rss','cpu_roofline_flops','gpu_roofline_flops','user_mpip_bundle','read_bytes', 'written_bytes'], key="marker_ctx_manager"):
+
+    #with marker(['wall_clock','cpu_util','peak_rss','cpu_roofline_flops','user_mpip_bundle','read_bytes', 'written_bytes'], key="marker_ctx_manager"):
+
+    #with profile(['wall_clock','cpu_util','peak_rss','cpu_roofline_sp_flops','gpu_roofline_flops','user_mpip_bundle',
+    #                'read_bytes', 'written_bytes'], flat=True, timeline=False):
+
+    #components = ['wall_clock', 'cpu_util', 'peak_rss','read_bytes', 'written_bytes','thread_cpu_util','user_mpip_bundle','thread_cpu_clock']
+    timemory.settings.flat_profile = False
+    timemory.settings.timeline_profile = False
+
+    components = ['wall_clock','peak_rss','read_bytes','written_bytes']
+    timemory.enable_signal_detection()
+    timemory.settings.width = 12
+    timemory.settings.precision = 6
+    timemory.settings.mpip_components = ','.join(components)
+    id = timemory.start_mpip()
+
+    #with profile(components, flat=True, timeline=False):
+    with marker(components, key="marker_ctx_manager"):
+
+        model.fit(datasets['train_dataset'],
+                  steps_per_epoch=datasets['n_train_steps'],
+                  epochs=data_config['n_epochs'],
+                  validation_data=datasets['valid_dataset'],
+                  validation_steps=datasets['n_valid_steps'],
+                  callbacks=callbacks,
+                  initial_epoch=initial_epoch,
+                  verbose=fit_verbose)
+
+    timemory.stop_mpip(id)
+    timemory.finalize()
 
     # Print training summary
     if rank == 0:
@@ -229,5 +282,10 @@ def main():
     if rank == 0:
         logging.info('All done!')
 
+
 if __name__ == '__main__':
+
+    #with profile(['wall_clock','cpu_util','peak_rss','cpu_roofline_sp_flops','user_mpip_bundle',
+    #                'read_bytes', 'written_bytes'], flat=True, timeline=False):
     main()
+
