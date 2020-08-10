@@ -1,5 +1,11 @@
 output_dir: results/cosmo-000
 
+mlperf:
+    org: LBNL
+    division: closed
+    status: onprem
+    platform: SUBMISSION_PLATFORM_PLACEHOLDER
+
 data:
     name: cosmo
     data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf

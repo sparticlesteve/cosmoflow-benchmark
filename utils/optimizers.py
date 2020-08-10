@@ -37,23 +37,32 @@ def get_lr_schedule(base_lr, global_batch_size, base_batch_size=None,
                     scaling=None, n_warmup_epochs=0, decay_schedule={}):
     """Get the learning rate schedule function"""
     if scaling == 'linear':
-        peak_lr = base_lr * global_batch_size / base_batch_size
+        scale_factor = global_batch_size / base_batch_size
     elif scaling == 'sqrt':
-        peak_lr = base_lr * math.sqrt(global_batch_size / base_batch_size)
+        scale_factor = math.sqrt(global_batch_size / base_batch_size)
     else:
-        peak_lr = base_lr
+        scale_factor = 1.;
+    peak_lr = base_lr * scale_factor
 
     # MLPerf logging
+    # NOTE: there is currently a confusing mismatch between the parameter
+    # naming convention in this implementation and MLPerf's hyperparameter
+    # conventions. Here we define base LR to be the LR at a baseline batch
+    # size and the "peak" LR to be the value scaled according to current batch
+    # size. We will leave things as-is for now.
     mllogger = mllog.get_mllogger()
-    mllogger.event(key=mllog.constants.OPT_BASE_LR, value=base_lr)
-    mllogger.event(key="opt_peak_learning_rate", value=peak_lr)
+    mllogger.event(key=mllog.constants.OPT_BASE_LR, value=peak_lr)
     mllogger.event(key=mllog.constants.OPT_LR_WARMUP_EPOCHS, value=n_warmup_epochs)
+    mllogger.event(key=mllog.constants.OPT_LR_WARMUP_FACTOR, value=scale_factor)
+    mllogger.event(key=mllog.constants.OPT_LR_DECAY_BOUNDARY_EPOCHS,
+                   value=sorted(decay_schedule.keys()))
+    mllogger.event(key=mllog.constants.OPT_LR_DECAY_FACTOR,
+                   value=max(decay_schedule.values()) if len(decay_schedule)>0 else 1)
     return partial(_lr_schedule, base_lr=base_lr, peak_lr=peak_lr,
                    n_warmup_epochs=n_warmup_epochs,
                    decay_schedule=decay_schedule)
 
 def get_optimizer(name, distributed=False, **opt_args):
-                  #lr, lr_scaling='linear', n_ranks=1,
     """Configure the optimizer"""
 
     # MLPerf logging

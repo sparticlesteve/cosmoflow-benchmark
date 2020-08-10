@@ -30,6 +30,7 @@ from utils.callbacks import TimingCallback, MLPerfLoggingCallback
 from utils.device import configure_session
 from utils.argparse import ReadYaml
 from utils.checkpoints import reload_last_checkpoint
+from utils.mlperf_logging import configure_mllogger, log_submission_info
 
 # Stupid workaround until absl logging fix, see:
 # https://github.com/tensorflow/tensorflow/issues/26691
@@ -172,9 +173,9 @@ def main():
     configure_session(gpu=gpu, **config.get('device', {}))
 
     # Start MLPerf logging
+    mllogger = configure_mllogger(config['output_dir'])
     if dist.rank == 0:
-        mllog.config(filename=os.path.join(config['output_dir'], 'mlperf.log'))
-        mllogger = mllog.get_mllogger()
+        log_submission_info(**config.get('mlperf', {}))
         mllogger.start(key=mllog.constants.RUN_START)
 
     # Load the data

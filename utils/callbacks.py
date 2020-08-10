@@ -14,9 +14,22 @@ class MLPerfLoggingCallback(tf.keras.callbacks.Callback):
     def __init__(self):
         self.mllogger = mllog.get_mllogger()
 
+    def on_epoch_begin(self, epoch, logs={}):
+        self.mllogger.start(key=mllog.constants.EPOCH_START,
+                            metadata={'epoch_num': epoch})
+
+    def on_test_begin(self, logs):
+        self.mllogger.start(key=mllog.constants.EVAL_START)
+
+    def on_test_end(self, logs):
+        self.mllogger.end(key=mllog.constants.EVAL_STOP)
+
     def on_epoch_end(self, epoch, logs={}):
+        self.mllogger.end(key=mllog.constants.EPOCH_STOP,
+                          metadata={'epoch_num': epoch})
         val_mae = logs['val_mean_absolute_error']
-        self.mllogger.event(key='eval_mae', value=val_mae)
+        self.mllogger.event(key='eval_error', value=val_mae,
+                            metadata={'epoch_num': epoch})
 
 class TimingCallback(tf.keras.callbacks.Callback):
     """A Keras Callback which records the time of each epoch"""
