@@ -164,6 +164,8 @@ def print_training_summary(output_dir, print_fom):
         # Figure of merit printing for HPO parsing
         if print_fom:
             print('FoM:', history['val_loss'].loc[best])
+    logging.info('Total epoch time: %.3f', history.time.sum())
+    logging.info('Mean epoch time: %.3f', history.time.mean())
 
 def main():
     """Main function"""
