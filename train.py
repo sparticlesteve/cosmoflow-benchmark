@@ -51,6 +51,8 @@ def parse_args():
     add_arg('--n-epochs', type=int, help='Override number of epochs')
     add_arg('--apply-log', type=int, choices=[0, 1], help='Apply log transform to data')
     add_arg('--stage-dir', help='Local directory to stage data to before training')
+    add_arg('--n-parallel-reads', type=int, help='Override num parallel read calls')
+    add_arg('--prefetch', type=int, help='Override data prefetch number')
 
     # Hyperparameter settings
     add_arg('--conv-size', type=int, help='CNN size parameter')
@@ -119,6 +121,10 @@ def load_config(args):
         config['data']['apply_log'] = bool(args.apply_log)
     if args.stage_dir is not None:
         config['data']['stage_dir'] = args.stage_dir
+    if args.n_parallel_reads is not None:
+        config['data']['n_parallel_reads'] = args.n_parallel_reads
+    if args.prefetch is not None:
+        config['data']['prefetch'] = args.prefetch
 
     # Hyperparameters
     if args.conv_size is not None:

@@ -46,7 +46,7 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
                       sample_shape, samples_per_file=1, n_file_sets=1,
                       shard=0, n_shards=1, apply_log=False,
                       randomize_files=False, shuffle=False,
-                      shuffle_buffer_size=0, prefetch=4):
+                      shuffle_buffer_size=0, n_parallel_reads=4, prefetch=4):
     """This function takes a folder with files and builds the TF dataset.
 
     It ensures that the requested sample counts are divisible by files,
@@ -84,7 +84,8 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
 
     # Parse TFRecords
     parse_data = partial(_parse_data, shape=sample_shape, apply_log=apply_log)
-    data = data.apply(tf.data.TFRecordDataset).map(parse_data, num_parallel_calls=4)
+    data = data.apply(tf.data.TFRecordDataset).map(
+        parse_data, num_parallel_calls=n_parallel_reads)
 
     # Parallelize reading with interleave - no benefit?
     #data = data.interleave(
@@ -107,8 +108,8 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
 def get_datasets(data_dir, sample_shape, n_train, n_valid,
                  batch_size, n_epochs, dist, samples_per_file=1,
                  shuffle_train=True, shuffle_valid=False,
-                 shard=True, stage_dir=None,
-                 prefetch=4, apply_log=False):
+                 shard=True, stage_dir=None, apply_log=False,
+                 **kwargs):
     """Prepare TF datasets for training and validation.
 
     This function will perform optional staging of data chunks to local
@@ -152,7 +153,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     dataset_args = dict(batch_size=batch_size, n_epochs=n_epochs,
                         sample_shape=sample_shape, samples_per_file=samples_per_file,
                         n_file_sets=n_file_sets, shard=shard, n_shards=n_shards,
-                        apply_log=apply_log, prefetch=prefetch)
+                        apply_log=apply_log, **kwargs)
     train_dataset, n_train_steps = construct_dataset(
         file_dir=os.path.join(data_dir, 'train'),
         n_samples=n_train, shuffle=shuffle_train, **dataset_args)
@@ -168,6 +169,13 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
         n_valid_worker = n_valid // (samples_per_file * n_file_sets * n_shards)
         logging.info('Each worker reading %i training samples and %i validation samples',
                      n_train_worker, n_valid_worker)
+
+    if dist.rank == 0:
+        logging.info('Data setting n_train: %i', n_train)
+        logging.info('Data setting n_valid: %i', n_valid)
+        logging.info('Data setting batch_size: %i', batch_size)
+        for k, v in kwargs.items():
+            logging.info('Data setting %s: %s', k, v)
 
     return dict(train_dataset=train_dataset, valid_dataset=valid_dataset,
                 n_train_steps=n_train_steps, n_valid_steps=n_valid_steps)
