@@ -61,12 +61,21 @@ def parse_args():
     add_arg('--optimizer', help='Override optimizer type')
     add_arg('--lr', type=float, help='Override learning rate')
 
-    # Other settings
+    # Runtime / device settings
     add_arg('-d', '--distributed', action='store_true')
     add_arg('--rank-gpu', action='store_true',
             help='Use GPU based on local rank')
     add_arg('--resume', action='store_true',
             help='Resume from last checkpoint')
+    add_arg('--intra-threads', type=int, default=32,
+            help='TF intra-parallel threads')
+    add_arg('--inter-threads', type=int, default=2,
+            help='TF inter-parallel threads')
+    add_arg('--kmp-blocktime', help='Set KMP_BLOCKTIME')
+    add_arg('--kmp-affinity', help='Set KMP_AFFINITY')
+    add_arg('--omp-num-threads', help='Set OMP_NUM_THREADS')
+
+    # Other settings
     add_arg('--print-fom', action='store_true',
             help='Print parsable figure of merit')
     add_arg('-v', '--verbose', action='store_true')
@@ -168,7 +177,12 @@ def main():
     gpu = dist.local_rank if args.rank_gpu else None
     if gpu is not None:
         logging.info('Taking gpu %i', gpu)
-    configure_session(gpu=gpu, **config.get('device', {}))
+    configure_session(gpu=gpu,
+                      intra_threads=args.intra_threads,
+                      inter_threads=args.inter_threads,
+                      kmp_blocktime=args.kmp_blocktime,
+                      kmp_affinity=args.kmp_affinity,
+                      omp_num_threads=args.omp_num_threads)
 
     # Load the data
     data_config = config['data']
