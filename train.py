@@ -78,6 +78,8 @@ def parse_args():
     add_arg('--omp-num-threads', help='Set OMP_NUM_THREADS')
 
     # Other settings
+    add_arg('--tensorboard', action='store_true',
+            help='Enable TB logger')
     add_arg('--print-fom', action='store_true',
             help='Print parsable figure of merit')
     add_arg('-v', '--verbose', action='store_true')
@@ -256,8 +258,9 @@ def main():
         callbacks.append(tf.keras.callbacks.ModelCheckpoint(checkpoint_format))
         callbacks.append(tf.keras.callbacks.CSVLogger(
             os.path.join(config['output_dir'], 'history.csv'), append=args.resume))
-        callbacks.append(tf.keras.callbacks.TensorBoard(
-            os.path.join(config['output_dir'], 'tensorboard')))
+        if args.tensorboard:
+            callbacks.append(tf.keras.callbacks.TensorBoard(
+                os.path.join(config['output_dir'], 'tensorboard')))
 
     # Early stopping
     patience = config.get('early_stopping_patience', None)
