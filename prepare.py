@@ -1,5 +1,6 @@
 """
-Data preparation script which reads HDF5 files and produces TFRecords.
+Data preparation script which reads HDF5 files and produces either split HDF5
+files or TFRecord files.
 """
 
 # System
@@ -23,6 +24,8 @@ def parse_args():
         default='/global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf')
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('--sample-size', type=int, default=128)
+    parser.add_argument('--write-tfrecord', action='store_true',
+                        help='Enable writing tfrecord files, otherwise split hdf5s')
     parser.add_argument('--max-files', type=int)
     parser.add_argument('--n-workers', type=int, default=1)
     parser.add_argument('--task', type=int, default=0)
@@ -59,7 +62,12 @@ def write_record(output_file, example):
     with tf.io.TFRecordWriter(output_file) as writer:
         writer.write(example.SerializeToString())
 
-def process_file(input_file, output_dir, sample_size):
+def write_hdf5(output_file, x, y):
+    with h5py.File(output_file, mode='w') as f:
+        f.create_dataset('x', data=x)
+        f.create_dataset('y', data=y)
+
+def process_file(input_file, output_dir, sample_size, write_tfrecord):
     logging.info('Reading %s', input_file)
 
     # Load the data
@@ -68,22 +76,35 @@ def process_file(input_file, output_dir, sample_size):
     # Loop over sub-volumes
     for i, xi in enumerate(split_universe(x, sample_size)):
 
-        # Convert to TF example
-        feature_dict = dict(
-            x=tf.train.Feature(bytes_list=tf.train.BytesList(value=[xi.tostring()])),
-            #x=tf.train.Feature(float_list=tf.train.FloatList(value=xi.flatten())),
-            y=tf.train.Feature(float_list=tf.train.FloatList(value=y)))
-        tf_example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
+        if write_tfrecord:
 
-        # Determine output file name
-        output_file = os.path.join(
-            output_dir,
-            os.path.basename(input_file).replace('.hdf5', '_%03i.tfrecord' % i)
-        )
+            # Convert to TF example
+            feature_dict = dict(
+                x=tf.train.Feature(bytes_list=tf.train.BytesList(value=[xi.tostring()])),
+                #x=tf.train.Feature(float_list=tf.train.FloatList(value=xi.flatten())),
+                y=tf.train.Feature(float_list=tf.train.FloatList(value=y)))
+            tf_example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
 
-        # Write the output file
-        logging.info('Writing %s', output_file)
-        write_record(output_file, tf_example)
+            # Determine output file name
+            output_file = os.path.join(
+                output_dir,
+                os.path.basename(input_file).replace('.hdf5', '_%03i.tfrecord' % i)
+            )
+
+            # Write the output file
+            logging.info('Writing %s', output_file)
+            write_record(output_file, tf_example)
+
+        else:
+
+            # Just write a new HDF5 file
+            output_file = os.path.join(
+                output_dir,
+                os.path.basename(input_file).replace('.hdf5', '_%03i.hdf5' % i)
+            )
+            logging.info('Writing %s', output_file)
+            write_hdf5(output_file, xi, y)
+
 
 def main():
     """Main function"""
@@ -107,7 +128,8 @@ def main():
     # Process input files with a worker pool
     with mp.Pool(processes=args.n_workers) as pool:
         process_func = partial(process_file, output_dir=args.output_dir,
-                               sample_size=args.sample_size)
+                               sample_size=args.sample_size,
+                               write_tfrecord=args.write_tfrecord)
         pool.map(process_func, input_files)
 
     logging.info('All done!')
