@@ -17,12 +17,15 @@ class MLPerfLoggingCallback(tf.keras.callbacks.Callback):
     def on_epoch_begin(self, epoch, logs={}):
         self.mllogger.start(key=mllog.constants.EPOCH_START,
                             metadata={'epoch_num': epoch})
+        self._epoch = epoch
 
     def on_test_begin(self, logs):
-        self.mllogger.start(key=mllog.constants.EVAL_START)
+        self.mllogger.start(key=mllog.constants.EVAL_START,
+                            metadata={'epoch_num': self._epoch})
 
     def on_test_end(self, logs):
-        self.mllogger.end(key=mllog.constants.EVAL_STOP)
+        self.mllogger.end(key=mllog.constants.EVAL_STOP,
+                          metadata={'epoch_num': self._epoch})
 
     def on_epoch_end(self, epoch, logs={}):
         self.mllogger.end(key=mllog.constants.EPOCH_STOP,
