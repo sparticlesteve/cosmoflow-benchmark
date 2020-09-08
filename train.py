@@ -185,6 +185,12 @@ def main():
     if dist.rank == 0:
         logging.info('Configuration: %s', config)
 
+    # Setup MLPerf logging
+    mllogger = configure_mllogger(config['output_dir'])
+    if dist.rank == 0:
+        mllogger.event(key=mllog.constants.CACHE_CLEAR)
+        mllogger.start(key=mllog.constants.INIT_START)
+
     # Device and session configuration
     gpu = dist.local_rank if args.rank_gpu else None
     if gpu is not None:
@@ -197,9 +203,9 @@ def main():
                       omp_num_threads=args.omp_num_threads)
 
     # Start MLPerf logging
-    mllogger = configure_mllogger(config['output_dir'])
     if dist.rank == 0:
         log_submission_info(**config.get('mlperf', {}))
+        mllogger.end(key=mllog.constants.INIT_STOP)
         mllogger.start(key=mllog.constants.RUN_START)
 
     # Load the data
