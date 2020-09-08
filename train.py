@@ -301,7 +301,7 @@ def main():
 
     # Stop MLPerf timer
     if dist.rank == 0:
-        mllogger.end(key=mllog.constants.RUN_STOP)
+        mllogger.end(key=mllog.constants.RUN_STOP, metadata={'status': 'success'})
 
     # Print training summary
     if dist.rank == 0:
