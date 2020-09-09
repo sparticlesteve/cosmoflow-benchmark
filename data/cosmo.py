@@ -121,10 +121,11 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     """
 
     # MLPerf logging
-    mllogger = mllog.get_mllogger()
-    mllogger.event(key=mllog.constants.GLOBAL_BATCH_SIZE, value=batch_size*dist.size)
-    mllogger.event(key=mllog.constants.TRAIN_SAMPLES, value=n_train)
-    mllogger.event(key=mllog.constants.EVAL_SAMPLES, value=n_valid)
+    if dist.rank == 0:
+        mllogger = mllog.get_mllogger()
+        mllogger.event(key=mllog.constants.GLOBAL_BATCH_SIZE, value=batch_size*dist.size)
+        mllogger.event(key=mllog.constants.TRAIN_SAMPLES, value=n_train)
+        mllogger.event(key=mllog.constants.EVAL_SAMPLES, value=n_valid)
     data_dir = os.path.expandvars(data_dir)
 
     # Local data staging
