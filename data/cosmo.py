@@ -129,7 +129,13 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
         mllogger.event(key=mllog.constants.EVAL_SAMPLES, value=n_valid)
     data_dir = os.path.expandvars(data_dir)
 
+    # Synchronize before local data staging
+    utils.distributed.barrier()
+
     # Local data staging
+    if dist.rank == 0:
+        mllogger.start(key='stage_start')
+
     if stage_dir is not None:
         staged_files = True
         # Stage training data
@@ -141,11 +147,13 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
                     os.path.join(stage_dir, 'validation'),
                     n_files=n_valid, rank=dist.rank, size=dist.size)
         data_dir = stage_dir
-
-        # Barrier to ensure all workers are done transferring
-        utils.distributed.barrier()
     else:
         staged_files = False
+
+    # Barrier for workers to be done transferring
+    utils.distributed.barrier()
+    if dist.rank == 0:
+        mllogger.end(key='stage_stop')
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1
