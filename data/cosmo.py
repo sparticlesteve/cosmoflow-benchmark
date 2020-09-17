@@ -13,6 +13,7 @@ from mlperf_logging import mllog
 import horovod.tensorflow.keras as hvd
 
 # Local imports
+import utils.distributed
 from utils.staging import stage_files
 
 def _parse_data(sample_proto, shape, apply_log=False):
@@ -142,8 +143,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
         data_dir = stage_dir
 
         # Barrier to ensure all workers are done transferring
-        if dist.size > 0:
-            hvd.allreduce([], name="Barrier")
+        utils.distributed.barrier()
     else:
         staged_files = False
 
