@@ -4,6 +4,7 @@ This module contains some utility callbacks for Keras training.
 
 # System
 from time import time
+import logging
 
 # Externals
 import tensorflow as tf
@@ -35,6 +36,19 @@ class MLPerfLoggingCallback(tf.keras.callbacks.Callback):
         eval_metric = logs[self.metric]
         self.mllogger.event(key=self.log_key, value=eval_metric,
                             metadata={'epoch_num': epoch})
+
+class StopAtTargetCallback(tf.keras.callbacks.Callback):
+    """A Keras callback for stopping training at specified target quality"""
+
+    def __init__(self, metric='val_mean_absolute_error', target_max=None):
+        self.metric = metric
+        self.target_max = target_max
+
+    def on_epoch_end(self, epoch, logs={}):
+        eval_metric = logs[self.metric]
+        if self.target_max is not None and eval_metric <= self.target_max:
+            self.model.stop_training = True
+            logging.info('Target reached; stopping training')
 
 class TimingCallback(tf.keras.callbacks.Callback):
     """A Keras Callback which records the time of each epoch"""
