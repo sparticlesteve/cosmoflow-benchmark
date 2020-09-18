@@ -26,7 +26,8 @@ from models import get_model
 # Fix for loading Lambda layer checkpoints
 from models.layers import *
 from utils.optimizers import get_optimizer, get_lr_schedule
-from utils.callbacks import TimingCallback, MLPerfLoggingCallback
+from utils.callbacks import (TimingCallback, MLPerfLoggingCallback,
+                             StopAtTargetCallback)
 from utils.device import configure_session
 from utils.argparse import ReadYaml
 from utils.checkpoints import reload_last_checkpoint
@@ -278,10 +279,14 @@ def main():
         callbacks.append(MLPerfLoggingCallback())
 
     # Early stopping
-    patience = config.get('early_stopping_patience', None)
+    patience = train_config.get('early_stopping_patience', None)
     if patience is not None:
         callbacks.append(tf.keras.callbacks.EarlyStopping(
             monitor='val_loss', min_delta=1e-5, patience=patience, verbose=1))
+
+    # Stopping at specified target
+    target_mae = train_config.get('target_mae', None)
+    callbacks.append(StopAtTargetCallback(target_max=target_mae))
 
     if dist.rank == 0:
         logging.debug('Callbacks: %s', callbacks)

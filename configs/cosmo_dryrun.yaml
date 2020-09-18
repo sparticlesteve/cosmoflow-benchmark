@@ -46,4 +46,4 @@ lr_schedule:
 train:
     loss: mse
     metrics: ['mae']
-    early_stopping_patience: 8
+    target_mae: 1.
