@@ -278,7 +278,7 @@ def main():
         callbacks.append(MLPerfLoggingCallback())
 
     # Early stopping
-    patience = config.get('early_stopping_patience', None)
+    patience = train_config.get('early_stopping_patience', None)
     if patience is not None:
         callbacks.append(tf.keras.callbacks.EarlyStopping(
             monitor='val_loss', min_delta=1e-5, patience=patience, verbose=1))
