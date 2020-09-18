@@ -7,3 +7,9 @@ def rank():
         return hvd.rank()
     except ValueError:
         return 0
+
+def barrier():
+    try:
+        hvd.allreduce([], name='Barrier')
+    except ValueError:
+        pass
