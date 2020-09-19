@@ -45,6 +45,9 @@ RUN pip install \
     #tensorflow==1.15.2
 
 # Now need Horovod
-RUN HOROVOD_WITH_TENSORFLOW=1 pip install -v horovod
+RUN HOROVOD_WITH_TENSORFLOW=1 pip install --no-cache-dir -v horovod
+
+# Install MLPerf-logging
+RUN pip install --no-cache-dir "git+https://github.com/mlperf-hpc/logging.git@hpc-0.5.0"
 
 RUN /sbin/ldconfig
