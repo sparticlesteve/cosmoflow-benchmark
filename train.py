@@ -18,6 +18,7 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
+import wandb
 
 # Local imports
 from data import get_datasets
@@ -42,6 +43,7 @@ def parse_args():
     add_arg = parser.add_argument
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
     add_arg('--output-dir', help='Override output directory')
+    add_arg('--run-tag', help='Unique run tag for logging')
 
     # Override data settings
     add_arg('--data-dir', help='Override the path to input files')
@@ -78,6 +80,8 @@ def parse_args():
     add_arg('--omp-num-threads', help='Set OMP_NUM_THREADS')
 
     # Other settings
+    add_arg('--wandb', action='store_true',
+            help='Enable W&B logging')
     add_arg('--tensorboard', action='store_true',
             help='Enable TB logger')
     add_arg('--print-fom', action='store_true',
@@ -183,6 +187,12 @@ def main():
     if dist.rank == 0:
         logging.info('Configuration: %s', config)
 
+    # Initialize Weights & Biases logging
+    if args.wandb and dist.rank == 0:
+        import wandb
+        wandb.init(project='cosmoflow', name=args.run_tag, id=args.run_tag,
+                   config=config, resume=args.run_tag)
+
     # Device and session configuration
     gpu = dist.local_rank if args.rank_gpu else None
     if gpu is not None:
@@ -261,6 +271,8 @@ def main():
         if args.tensorboard:
             callbacks.append(tf.keras.callbacks.TensorBoard(
                 os.path.join(config['output_dir'], 'tensorboard')))
+        if args.wandb:
+            callbacks.append(wandb.keras.WandbCallback())
 
     # Early stopping
     patience = config.get('early_stopping_patience', None)
