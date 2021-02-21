@@ -14,7 +14,7 @@ import horovod.tensorflow.keras as hvd
 # Local imports
 from utils.staging import stage_files
 
-def _parse_data(sample_proto, shape, apply_log=False):
+def _parse_data(sample_proto, shape, apply_log=False, n_targets=None):
     """Parse the data out of the TFRecord proto buf.
 
     This pipeline could be sped up considerably by moving the cast and log
@@ -32,6 +32,9 @@ def _parse_data(sample_proto, shape, apply_log=False):
     x = tf.cast(tf.reshape(x, shape), tf.float32)
     y = parsed_example['y']
 
+    if n_targets is not None:
+        y = y[:n_targets]
+
     # Data normalization/scaling
     if apply_log:
         # Take logarithm of the data spectrum
@@ -43,8 +46,8 @@ def _parse_data(sample_proto, shape, apply_log=False):
     return x, y
 
 def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
-                      sample_shape, samples_per_file=1, n_file_sets=1,
-                      shard=0, n_shards=1, apply_log=False,
+                      sample_shape, samples_per_file=1, n_targets=None,
+                      n_file_sets=1, shard=0, n_shards=1, apply_log=False,
                       randomize_files=False, shuffle=False,
                       shuffle_buffer_size=0, n_parallel_reads=4, prefetch=4):
     """This function takes a folder with files and builds the TF dataset.
@@ -83,7 +86,8 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
         data = data.shuffle(len(filenames), reshuffle_each_iteration=True)
 
     # Parse TFRecords
-    parse_data = partial(_parse_data, shape=sample_shape, apply_log=apply_log)
+    parse_data = partial(_parse_data, shape=sample_shape, apply_log=apply_log,
+                         n_targets=n_targets)
     data = data.apply(tf.data.TFRecordDataset).map(
         parse_data, num_parallel_calls=n_parallel_reads)
 
