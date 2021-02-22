@@ -46,7 +46,8 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
                       sample_shape, samples_per_file=1, n_file_sets=1,
                       shard=0, n_shards=1, apply_log=False,
                       randomize_files=False, shuffle=False,
-                      shuffle_buffer_size=0, n_parallel_reads=4, prefetch=4):
+                      shuffle_buffer_size=0, n_parallel_reads=4, prefetch=4,
+                      compression=None):
     """This function takes a folder with files and builds the TF dataset.
 
     It ensures that the requested sample counts are divisible by files,
@@ -84,12 +85,13 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
 
     # Parse TFRecords
     parse_data = partial(_parse_data, shape=sample_shape, apply_log=apply_log)
-    data = data.apply(tf.data.TFRecordDataset).map(
-        parse_data, num_parallel_calls=n_parallel_reads)
+    wrap_dataset = partial(tf.data.TFRecordDataset, compression_type=compression)
+    data = data.apply(wrap_dataset).map(parse_data, num_parallel_calls=n_parallel_reads)
 
     # Parallelize reading with interleave - no benefit?
     #data = data.interleave(
-    #    lambda x: tf.data.TFRecordDataset(x).map(parse_data, num_parallel_calls=1),
+    #    lambda x: tf.data.TFRecordDataset(x, compression_type=compression)
+    #              .map(parse_data, num_parallel_calls=1),
     #    cycle_length=4
     #)
 
