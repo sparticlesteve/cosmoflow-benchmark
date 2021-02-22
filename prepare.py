@@ -76,6 +76,15 @@ def process_file(input_file, output_dir, sample_size, write_tfrecord):
     # Loop over sub-volumes
     for i, xi in enumerate(split_universe(x, sample_size)):
 
+        # Output file name pattern. To avoid name collisions,
+        # we prepend the subdirectory name to the output file name.
+        # We also append the subvolume index
+        subdir = os.path.basename(os.path.dirname(input_file))
+        output_file_prefix = os.path.join(
+            output_dir,
+            subdir + '_' + os.path.basename(input_file).replace('.hdf5', '_%03i' % i)
+        )
+
         if write_tfrecord:
 
             # Convert to TF example
@@ -86,10 +95,7 @@ def process_file(input_file, output_dir, sample_size, write_tfrecord):
             tf_example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
 
             # Determine output file name
-            output_file = os.path.join(
-                output_dir,
-                os.path.basename(input_file).replace('.hdf5', '_%03i.tfrecord' % i)
-            )
+            output_file = output_file_prefix + '.tfrecord'
 
             # Write the output file
             logging.info('Writing %s', output_file)
@@ -98,10 +104,7 @@ def process_file(input_file, output_dir, sample_size, write_tfrecord):
         else:
 
             # Just write a new HDF5 file
-            output_file = os.path.join(
-                output_dir,
-                os.path.basename(input_file).replace('.hdf5', '_%03i.hdf5' % i)
-            )
+            output_file = output_file_prefix + '.hdf5'
             logging.info('Writing %s', output_file)
             write_hdf5(output_file, xi, y)
 
