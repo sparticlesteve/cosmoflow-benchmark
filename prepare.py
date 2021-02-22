@@ -30,6 +30,7 @@ def parse_args():
     parser.add_argument('--n-workers', type=int, default=1)
     parser.add_argument('--task', type=int, default=0)
     parser.add_argument('--n-tasks', type=int, default=1)
+    parser.add_argument('--gzip', action='store_true')
     return parser.parse_args()
 
 def find_files(input_dir, max_files=None):
@@ -58,16 +59,17 @@ def split_universe(x, size):
             for xijk in np.split(xij, n, axis=2):
                 yield xijk
 
-def write_record(output_file, example):
-    with tf.io.TFRecordWriter(output_file) as writer:
+def write_record(output_file, example, compression=None):
+    with tf.io.TFRecordWriter(output_file, options=compression) as writer:
         writer.write(example.SerializeToString())
 
-def write_hdf5(output_file, x, y):
+def write_hdf5(output_file, x, y, compression=None):
     with h5py.File(output_file, mode='w') as f:
-        f.create_dataset('x', data=x)
+        f.create_dataset('x', data=x, compression=compression)
         f.create_dataset('y', data=y)
 
-def process_file(input_file, output_dir, sample_size, write_tfrecord):
+def process_file(input_file, output_dir, sample_size, write_tfrecord,
+                 compression=False):
     logging.info('Reading %s', input_file)
 
     # Load the data
@@ -99,15 +101,16 @@ def process_file(input_file, output_dir, sample_size, write_tfrecord):
 
             # Write the output file
             logging.info('Writing %s', output_file)
-            write_record(output_file, tf_example)
+            compression_type = 'GZIP' if compression else None
+            write_record(output_file, tf_example, compression=compression_type)
 
         else:
 
             # Just write a new HDF5 file
             output_file = output_file_prefix + '.hdf5'
             logging.info('Writing %s', output_file)
-            write_hdf5(output_file, xi, y)
-
+            compression_type = 'gzip' if compression else None
+            write_hdf5(output_file, xi, y, compression=compression_type)
 
 def main():
     """Main function"""
@@ -132,7 +135,8 @@ def main():
     with mp.Pool(processes=args.n_workers) as pool:
         process_func = partial(process_file, output_dir=args.output_dir,
                                sample_size=args.sample_size,
-                               write_tfrecord=args.write_tfrecord)
+                               write_tfrecord=args.write_tfrecord,
+                               compression=args.gzip)
         pool.map(process_func, input_files)
 
     logging.info('All done!')
