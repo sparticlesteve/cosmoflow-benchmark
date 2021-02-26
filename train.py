@@ -78,6 +78,7 @@ def parse_args():
     add_arg('--kmp-blocktime', help='Set KMP_BLOCKTIME')
     add_arg('--kmp-affinity', help='Set KMP_AFFINITY')
     add_arg('--omp-num-threads', help='Set OMP_NUM_THREADS')
+    add_arg('--amp', action='store_true', help='Enable automatic mixed precision')
 
     # Other settings
     add_arg('--wandb', action='store_true',
@@ -203,6 +204,13 @@ def main():
                       kmp_blocktime=args.kmp_blocktime,
                       kmp_affinity=args.kmp_affinity,
                       omp_num_threads=args.omp_num_threads)
+
+    # Mixed precision
+    if args.amp:
+        logging.info('Enabling mixed float16 precision')
+        tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
+        # TF 2.3
+        #tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
     # Load the data
     data_config = config['data']
