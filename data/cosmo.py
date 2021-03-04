@@ -28,7 +28,7 @@ def _parse_data(sample_proto, shape, apply_log=False):
         sample_proto, features=feature_spec)
 
     # Decode the bytes data, convert to float
-    x = tf.decode_raw(parsed_example['x'], tf.int16)
+    x = tf.io.decode_raw(parsed_example['x'], tf.int16)
     x = tf.cast(tf.reshape(x, shape), tf.float32)
     y = parsed_example['y']
 
