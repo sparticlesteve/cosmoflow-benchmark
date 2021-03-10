@@ -2,12 +2,13 @@
 
 import tensorflow as tf
 import tensorflow.keras.layers as layers
+import tensorflow.keras.regularizers as regularizers
 
 from .layers import scale_1p2
 
 def build_model(input_shape, target_size,
                 conv_size=16, kernel_size=2, n_conv_layers=5,
-                fc1_size=128, fc2_size=64,
+                fc1_size=128, fc2_size=64, l2=0,
                 hidden_activation='LeakyReLU',
                 pooling_type='MaxPool3D',
                 dropout=0):
@@ -33,10 +34,10 @@ def build_model(input_shape, target_size,
     model.add(layers.Flatten())
 
     # Fully-connected layers
-    model.add(layers.Dense(fc1_size))
+    model.add(layers.Dense(fc1_size, kernel_regularizer=regularizers.l2(l2)))
     model.add(hidden_activation())
     model.add(layers.Dropout(dropout))
-    model.add(layers.Dense(fc2_size))
+    model.add(layers.Dense(fc2_size, kernel_regularizer=regularizers.l2(l2)))
     model.add(hidden_activation())
     model.add(layers.Dropout(dropout))
 
