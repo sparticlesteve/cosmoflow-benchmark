@@ -48,5 +48,5 @@ lr_schedule:
 
 train:
     loss: mse
-    metrics: ['mae']
+    metrics: ['mean_absolute_error']
     early_stopping_patience: 8
