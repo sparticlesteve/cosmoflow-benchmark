@@ -54,5 +54,6 @@ lr_schedule:
 
 train:
     loss: mse
-    metrics: ['mae']
-    target_mae: 0.124
+    metrics: ['mean_absolute_error']
+    # Uncomment to stop at target quality
+    #target_mae: 0.124
