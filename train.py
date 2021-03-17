@@ -45,6 +45,7 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
+import wandb
 
 # MLPerf logging
 try:
@@ -78,6 +79,7 @@ def parse_args():
     add_arg = parser.add_argument
     add_arg('config', nargs='?', default='configs/cosmo.yaml')
     add_arg('--output-dir', help='Override output directory')
+    add_arg('--run-tag', help='Unique run tag for logging')
 
     # Override data settings
     add_arg('--data-dir', help='Override the path to input files')
@@ -112,10 +114,13 @@ def parse_args():
     add_arg('--kmp-blocktime', help='Set KMP_BLOCKTIME')
     add_arg('--kmp-affinity', help='Set KMP_AFFINITY')
     add_arg('--omp-num-threads', help='Set OMP_NUM_THREADS')
+    add_arg('--amp', action='store_true', help='Enable automatic mixed precision')
 
     # Other settings
     add_arg('--mlperf', action='store_true',
             help='Enable MLPerf logging')
+    add_arg('--wandb', action='store_true',
+            help='Enable W&B logging')
     add_arg('--tensorboard', action='store_true',
             help='Enable TB logger')
     add_arg('--print-fom', action='store_true',
@@ -228,6 +233,12 @@ def main():
         mllogger.event(key=mllog.constants.CACHE_CLEAR)
         mllogger.start(key=mllog.constants.INIT_START)
 
+    # Initialize Weights & Biases logging
+    if args.wandb and dist.rank == 0:
+        import wandb
+        wandb.init(project='cosmoflow', name=args.run_tag, id=args.run_tag,
+                   config=config, resume=args.run_tag)
+
     # Device and session configuration
     gpu = dist.local_rank if args.rank_gpu else None
     if gpu is not None:
@@ -238,6 +249,13 @@ def main():
                       kmp_blocktime=args.kmp_blocktime,
                       kmp_affinity=args.kmp_affinity,
                       omp_num_threads=args.omp_num_threads)
+
+    # Mixed precision
+    if args.amp:
+        logging.info('Enabling mixed float16 precision')
+        tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
+        # TF 2.3
+        #tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
     # Start MLPerf logging
     if dist.rank == 0 and args.mlperf:
@@ -314,6 +332,8 @@ def main():
                 os.path.join(config['output_dir'], 'tensorboard')))
         if args.mlperf:
             callbacks.append(MLPerfLoggingCallback())
+        if args.wandb:
+            callbacks.append(wandb.keras.WandbCallback())
 
     # Early stopping
     patience = train_config.get('early_stopping_patience', None)
