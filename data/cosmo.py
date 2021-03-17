@@ -36,8 +36,12 @@ from functools import partial
 # External imports
 import numpy as np
 import tensorflow as tf
-from mlperf_logging import mllog
 import horovod.tensorflow.keras as hvd
+try:
+    from mlperf_logging import mllog
+    have_mlperf_logging = True
+except ImportError:
+    have_mlperf_logging = False
 
 # Local imports
 import utils.distributed
@@ -149,7 +153,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     """
 
     # MLPerf logging
-    if dist.rank == 0:
+    if dist.rank == 0 and have_mlperf_logging:
         mllogger = mllog.get_mllogger()
         mllogger.event(key=mllog.constants.GLOBAL_BATCH_SIZE, value=batch_size*dist.size)
         mllogger.event(key=mllog.constants.TRAIN_SAMPLES, value=n_train)
@@ -160,7 +164,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     utils.distributed.barrier()
 
     # Local data staging
-    if dist.rank == 0:
+    if dist.rank == 0 and have_mlperf_logging:
         mllogger.start(key=mllog.constants.STAGING_START)
 
     if stage_dir is not None:
@@ -179,7 +183,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
 
     # Barrier for workers to be done transferring
     utils.distributed.barrier()
-    if dist.rank == 0:
+    if dist.rank == 0 and have_mlperf_logging:
         mllogger.end(key=mllog.constants.STAGING_STOP)
 
     # Determine number of staged file sets and worker shards

@@ -45,7 +45,13 @@ import tensorflow as tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
-from mlperf_logging import mllog
+
+# MLPerf logging
+try:
+    from mlperf_logging import mllog
+    have_mlperf_logging = True
+except ImportError:
+    have_mlperf_logging = False
 
 # Local imports
 from data import get_datasets
@@ -108,6 +114,8 @@ def parse_args():
     add_arg('--omp-num-threads', help='Set OMP_NUM_THREADS')
 
     # Other settings
+    add_arg('--mlperf', action='store_true',
+            help='Enable MLPerf logging')
     add_arg('--tensorboard', action='store_true',
             help='Enable TB logger')
     add_arg('--print-fom', action='store_true',
@@ -214,8 +222,9 @@ def main():
         logging.info('Configuration: %s', config)
 
     # Setup MLPerf logging
-    mllogger = configure_mllogger(config['output_dir'])
-    if dist.rank == 0:
+    if args.mlperf:
+        mllogger = configure_mllogger(config['output_dir'])
+    if dist.rank == 0 and args.mlperf:
         mllogger.event(key=mllog.constants.CACHE_CLEAR)
         mllogger.start(key=mllog.constants.INIT_START)
 
@@ -231,7 +240,7 @@ def main():
                       omp_num_threads=args.omp_num_threads)
 
     # Start MLPerf logging
-    if dist.rank == 0:
+    if dist.rank == 0 and args.mlperf:
         log_submission_info(**config.get('mlperf', {}))
         mllogger.end(key=mllog.constants.INIT_STOP)
         mllogger.start(key=mllog.constants.RUN_START)
@@ -303,7 +312,8 @@ def main():
         if args.tensorboard:
             callbacks.append(tf.keras.callbacks.TensorBoard(
                 os.path.join(config['output_dir'], 'tensorboard')))
-        callbacks.append(MLPerfLoggingCallback())
+        if args.mlperf:
+            callbacks.append(MLPerfLoggingCallback())
 
     # Early stopping
     patience = train_config.get('early_stopping_patience', None)
@@ -332,7 +342,7 @@ def main():
               verbose=fit_verbose)
 
     # Stop MLPerf timer
-    if dist.rank == 0:
+    if dist.rank == 0 and args.mlperf:
         mllogger.end(key=mllog.constants.RUN_STOP, metadata={'status': 'success'})
 
     # Print training summary
