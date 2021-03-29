@@ -25,21 +25,38 @@
 # to reproduce, distribute copies to the public, prepare derivative works, and
 # perform publicly and display publicly, and to permit other to do so.
 
-"""Utility code for argparse"""
+"""
+Utilities for MLPerf logging.
+Depends on the mlperf_logging package at
+https://github.com/mlperf/logging
+"""
 
-import argparse
-import yaml
+# System
+import os
 
-#class StoreDictKeyPair(argparse.Action):
-#    """An action for reading key-value pairs from command line"""
-#    def __call__(self, parser, namespace, values, option_string=None):
-#        my_dict = {}
-#        for kv in values.split(","):
-#            k,v = kv.split("=")
-#            my_dict[k] = v
-#        setattr(namespace, self.dest, my_dict)
+# Externals
+try:
+    from mlperf_logging import mllog
+    have_mlperf_logging = True
+except ImportError:
+    have_mlperf_logging = False
 
-class ReadYaml(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        my_dict = yaml.load(values, Loader=yaml.FullLoader)
-        setattr(namespace, self.dest, my_dict)
+def configure_mllogger(log_dir):
+    """Setup the MLPerf logger"""
+    if not have_mlperf_logging:
+        raise RuntimeError('mlperf_logging package unavailable')
+    mllog.config(filename=os.path.join(log_dir, 'mlperf.log'))
+    return mllog.get_mllogger()
+
+def log_submission_info(benchmark='cosmoflow',
+                        org='UNDEFINED',
+                        division='UNDEFINED',
+                        status='UNDEFINED',
+                        platform='UNDEFINED'):
+    """Log general MLPerf submission details from config"""
+    mllogger = mllog.get_mllogger()
+    mllogger.event(key=mllog.constants.SUBMISSION_BENCHMARK, value=benchmark)
+    mllogger.event(key=mllog.constants.SUBMISSION_ORG, value=org)
+    mllogger.event(key=mllog.constants.SUBMISSION_DIVISION, value=division)
+    mllogger.event(key=mllog.constants.SUBMISSION_STATUS, value=status)
+    mllogger.event(key=mllog.constants.SUBMISSION_PLATFORM, value=platform)

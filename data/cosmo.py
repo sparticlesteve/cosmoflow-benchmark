@@ -1,3 +1,30 @@
+# 'Regression of 3D Sky Map to Cosmological Parameters (CosmoFlow)'
+# Copyright (c) 2018, The Regents of the University of California,
+# through Lawrence Berkeley National Laboratory (subject to receipt of any
+# required approvals from the U.S. Dept. of Energy).  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# If you have questions about your rights to use or distribute this software,
+# please contact Berkeley Lab's Innovation & Partnerships Office at IPO@lbl.gov.
+#
+# NOTICE.  This Software was developed under funding from the U.S. Department of
+# Energy and the U.S. Government consequently retains certain rights. As such,
+# the U.S. Government has been granted for itself and others acting on its
+# behalf a paid-up, nonexclusive, irrevocable, worldwide license in the Software
+# to reproduce, distribute copies to the public, prepare derivative works, and
+# perform publicly and display publicly, and to permit other to do so.
+
 """CosmoFlow dataset specification"""
 
 # System imports
@@ -10,8 +37,14 @@ from functools import partial
 import numpy as np
 import tensorflow as tf
 import horovod.tensorflow.keras as hvd
+try:
+    from mlperf_logging import mllog
+    have_mlperf_logging = True
+except ImportError:
+    have_mlperf_logging = False
 
 # Local imports
+import utils.distributed
 from utils.staging import stage_files
 
 def _parse_data(sample_proto, shape, apply_log=False):
@@ -121,9 +154,21 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     Returns: A dict of the two datasets and step counts per epoch.
     """
 
+    # MLPerf logging
+    if dist.rank == 0 and have_mlperf_logging:
+        mllogger = mllog.get_mllogger()
+        mllogger.event(key=mllog.constants.GLOBAL_BATCH_SIZE, value=batch_size*dist.size)
+        mllogger.event(key=mllog.constants.TRAIN_SAMPLES, value=n_train)
+        mllogger.event(key=mllog.constants.EVAL_SAMPLES, value=n_valid)
     data_dir = os.path.expandvars(data_dir)
 
+    # Synchronize before local data staging
+    utils.distributed.barrier()
+
     # Local data staging
+    if dist.rank == 0 and have_mlperf_logging:
+        mllogger.start(key='staging_start')
+
     if stage_dir is not None:
         staged_files = True
         # Stage training data
@@ -135,12 +180,13 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
                     os.path.join(stage_dir, 'validation'),
                     n_files=n_valid, rank=dist.rank, size=dist.size)
         data_dir = stage_dir
-
-        # Barrier to ensure all workers are done transferring
-        if dist.size > 0:
-            hvd.allreduce([], name="Barrier")
     else:
         staged_files = False
+
+    # Barrier for workers to be done transferring
+    utils.distributed.barrier()
+    if dist.rank == 0 and have_mlperf_logging:
+        mllogger.end(key='staging_stop')
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1

@@ -1,3 +1,30 @@
+# 'Regression of 3D Sky Map to Cosmological Parameters (CosmoFlow)'
+# Copyright (c) 2018, The Regents of the University of California,
+# through Lawrence Berkeley National Laboratory (subject to receipt of any
+# required approvals from the U.S. Dept. of Energy).  All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# If you have questions about your rights to use or distribute this software,
+# please contact Berkeley Lab's Innovation & Partnerships Office at IPO@lbl.gov.
+#
+# NOTICE.  This Software was developed under funding from the U.S. Department of
+# Energy and the U.S. Government consequently retains certain rights. As such,
+# the U.S. Government has been granted for itself and others acting on its
+# behalf a paid-up, nonexclusive, irrevocable, worldwide license in the Software
+# to reproduce, distribute copies to the public, prepare derivative works, and
+# perform publicly and display publicly, and to permit other to do so.
+
 """
 Main training script for the CosmoFlow Keras benchmark
 """
@@ -20,16 +47,25 @@ tf.compat.v1.logging.set_verbosity(logging.ERROR)
 import horovod.tensorflow.keras as hvd
 import wandb
 
+# MLPerf logging
+try:
+    from mlperf_logging import mllog
+    have_mlperf_logging = True
+except ImportError:
+    have_mlperf_logging = False
+
 # Local imports
 from data import get_datasets
 from models import get_model
 # Fix for loading Lambda layer checkpoints
 from models.layers import *
 from utils.optimizers import get_optimizer, get_lr_schedule
-from utils.callbacks import TimingCallback
+from utils.callbacks import (TimingCallback, MLPerfLoggingCallback,
+                             StopAtTargetCallback)
 from utils.device import configure_session
 from utils.argparse import ReadYaml
 from utils.checkpoints import reload_last_checkpoint
+from utils.mlperf_logging import configure_mllogger, log_submission_info
 
 # Stupid workaround until absl logging fix, see:
 # https://github.com/tensorflow/tensorflow/issues/26691
@@ -81,6 +117,8 @@ def parse_args():
     add_arg('--amp', action='store_true', help='Enable automatic mixed precision')
 
     # Other settings
+    add_arg('--mlperf', action='store_true',
+            help='Enable MLPerf logging')
     add_arg('--wandb', action='store_true',
             help='Enable W&B logging')
     add_arg('--tensorboard', action='store_true',
@@ -188,6 +226,13 @@ def main():
     if dist.rank == 0:
         logging.info('Configuration: %s', config)
 
+    # Setup MLPerf logging
+    if args.mlperf:
+        mllogger = configure_mllogger(config['output_dir'])
+    if dist.rank == 0 and args.mlperf:
+        mllogger.event(key=mllog.constants.CACHE_CLEAR)
+        mllogger.start(key=mllog.constants.INIT_START)
+
     # Initialize Weights & Biases logging
     if args.wandb and dist.rank == 0:
         import wandb
@@ -211,6 +256,12 @@ def main():
         tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
         # TF 2.3
         #tf.keras.mixed_precision.set_global_policy('mixed_float16')
+
+    # Start MLPerf logging
+    if dist.rank == 0 and args.mlperf:
+        log_submission_info(**config.get('mlperf', {}))
+        mllogger.end(key=mllog.constants.INIT_STOP)
+        mllogger.start(key=mllog.constants.RUN_START)
 
     # Load the data
     data_config = config['data']
@@ -279,14 +330,20 @@ def main():
         if args.tensorboard:
             callbacks.append(tf.keras.callbacks.TensorBoard(
                 os.path.join(config['output_dir'], 'tensorboard')))
+        if args.mlperf:
+            callbacks.append(MLPerfLoggingCallback())
         if args.wandb:
             callbacks.append(wandb.keras.WandbCallback())
 
     # Early stopping
-    patience = config.get('early_stopping_patience', None)
+    patience = train_config.get('early_stopping_patience', None)
     if patience is not None:
         callbacks.append(tf.keras.callbacks.EarlyStopping(
             monitor='val_loss', min_delta=1e-5, patience=patience, verbose=1))
+
+    # Stopping at specified target
+    target_mae = train_config.get('target_mae', None)
+    callbacks.append(StopAtTargetCallback(target_max=target_mae))
 
     if dist.rank == 0:
         logging.debug('Callbacks: %s', callbacks)
@@ -303,6 +360,10 @@ def main():
               callbacks=callbacks,
               initial_epoch=initial_epoch,
               verbose=fit_verbose)
+
+    # Stop MLPerf timer
+    if dist.rank == 0 and args.mlperf:
+        mllogger.end(key=mllog.constants.RUN_STOP, metadata={'status': 'success'})
 
     # Print training summary
     if dist.rank == 0:
