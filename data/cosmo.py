@@ -167,7 +167,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
 
     # Local data staging
     if dist.rank == 0 and have_mlperf_logging:
-        mllogger.start(key=mllog.constants.STAGING_START)
+        mllogger.start(key='staging_start')
 
     if stage_dir is not None:
         staged_files = True
@@ -186,7 +186,7 @@ def get_datasets(data_dir, sample_shape, n_train, n_valid,
     # Barrier for workers to be done transferring
     utils.distributed.barrier()
     if dist.rank == 0 and have_mlperf_logging:
-        mllogger.end(key=mllog.constants.STAGING_STOP)
+        mllogger.end(key='staging_stop')
 
     # Determine number of staged file sets and worker shards
     n_file_sets = (dist.size // dist.local_size) if staged_files else 1
