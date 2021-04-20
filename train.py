@@ -253,6 +253,11 @@ def main():
     # Mixed precision
     if args.amp:
         logging.info('Enabling mixed float16 precision')
+
+        # Suggested bug workaround from https://github.com/tensorflow/tensorflow/issues/38516
+        if tf.__version__.startswith('2.2.'):
+            from tensorflow.python.keras.mixed_precision.experimental import device_compatibility_check
+            device_compatibility_check.log_device_compatibility_check = lambda policy_name, skip_local: None
         tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
         # TF 2.3
         #tf.keras.mixed_precision.set_global_policy('mixed_float16')
