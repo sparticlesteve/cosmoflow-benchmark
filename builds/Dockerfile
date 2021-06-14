@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/tensorflow:21.04-tf2-py3
+FROM nvcr.io/nvidia/tensorflow:21.03-tf2-py3
 
 RUN python -m pip install --no-cache-dir -U pip
 
