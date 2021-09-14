@@ -1,0 +1,45 @@
+output_dir: results/cosmo-rcp-64
+
+data:
+    name: cosmo
+    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_v2
+    compression: GZIP
+    n_train: 524288
+    n_valid: 65536
+    sample_shape: [128, 128, 128, 4]
+    batch_size: 4
+    n_epochs: 128
+    shard: True
+    apply_log: True
+    prefetch: 4
+
+model:
+    name: cosmoflow
+    input_shape: [128, 128, 128, 4]
+    kernel_size: 3
+    target_size: 4
+    conv_size: 32
+    fc1_size: 128
+    fc2_size: 64
+    hidden_activation: LeakyReLU
+    pooling_type: MaxPool3D
+    dropout: 0
+    l2: 0.01
+
+optimizer:
+    name: SGD
+    momentum: 0.9
+
+lr_schedule:
+    base_lr: 0.001
+    scaling: linear
+    base_batch_size: 64
+    n_warmup_epochs: 4
+    decay_schedule:
+        16: 0.25
+        32: 0.125
+
+train:
+    loss: mse
+    metrics: ['mean_absolute_error']
+    target_mae: 0.124
