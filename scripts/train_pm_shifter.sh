@@ -8,13 +8,15 @@
 #SBATCH --time 60
 #SBATCH -o logs/%x-%j.out
 
+args=$@
 export TF_CPP_MIN_LOG_LEVEL=1
 env | grep SLURM_NODELIST
 set -x
 
-# Run the dummy cuda app
+# Run the dummy cuda app to "fix" cuda init errors
+#echo "int main() {cudaFree(0);}" > dummy.cu && nvcc -o dummy dummy.cu
 srun ./dummy
 
 # Run the container
 srun -l -u --mpi=pmi2 shifter --module=gpu \
-    python train.py -d --rank-gpu $@
+    bash -c "python train.py -d --rank-gpu $args"
