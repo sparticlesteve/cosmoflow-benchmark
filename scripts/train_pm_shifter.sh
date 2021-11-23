@@ -15,7 +15,7 @@ set -x
 
 # Run the dummy cuda app to "fix" cuda init errors
 #echo "int main() {cudaFree(0);}" > dummy.cu && nvcc -o dummy dummy.cu
-srun ./dummy
+#srun ./dummy
 
 # Run the container
 srun -l -u --mpi=pmi2 shifter --module=gpu \
