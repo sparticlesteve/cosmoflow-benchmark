@@ -2,7 +2,7 @@ output_dir: results/cosmo-rcp-1024
 
 data:
     name: cosmo
-    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_v2
+    data_dir: /pscratch/sd/s/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_v2
     compression: GZIP
     n_train: 524288
     n_valid: 65536
