@@ -34,6 +34,7 @@ import os
 import argparse
 import logging
 import pickle
+import random
 from types import SimpleNamespace
 
 # External imports
@@ -225,8 +226,9 @@ def main():
         logging.info('Configuration: %s', config)
 
     # Random seeding
-    tf.random.set_seed(args.seed)
+    random.seed(args.seed)
     np.random.seed(args.seed)
+    tf.random.set_seed(args.seed)
 
     # Setup MLPerf logging
     if args.mlperf:
