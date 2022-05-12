@@ -374,11 +374,10 @@ def main():
     if dist.rank == 0:
         print_training_summary(config['output_dir'], args.print_fom)
 
-    # Print GPU memory - not supported in TF 2.2?
-    #if gpu is not None:
-    #    device = tf.config.list_physical_devices('GPU')[gpu]
-    #    #print(tf.config.experimental.get_memory_usage(device))
-    #    #print(tf.config.experimental.get_memory_info(device))
+    # Print GPU memory
+    if gpu is not None:
+        gpu_mem_info = tf.config.experimental.get_memory_info(f'GPU:{gpu}')
+        logging.info('Peak GPU memory: %.2f GB', gpu_mem_info['peak'] / 1024 / 1024 / 1024)
 
     # Finalize
     if dist.rank == 0:
