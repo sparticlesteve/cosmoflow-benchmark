@@ -122,6 +122,7 @@ def parse_args():
     add_arg('-v', '--verbose', action='store_true')
     return parser.parse_args()
 
+
 def init_workers(distributed=False):
     if distributed:
         hvd.init()
@@ -131,10 +132,12 @@ def init_workers(distributed=False):
     else:
         return SimpleNamespace(rank=0, size=1, local_rank=0, local_size=1)
 
+
 def config_logging(verbose):
     log_format = '%(asctime)s %(levelname)s %(message)s'
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level, format=log_format)
+
 
 def load_config(args):
     """Reads the YAML config file and returns a config dictionary"""
@@ -183,6 +186,7 @@ def load_config(args):
 
     return config
 
+
 def save_config(config):
     output_dir = config['output_dir']
     config_file = os.path.join(output_dir, 'config.pkl')
@@ -190,8 +194,10 @@ def save_config(config):
     with open(config_file, 'wb') as f:
         pickle.dump(config, f)
 
+
 def load_history(output_dir):
     return pd.read_csv(os.path.join(output_dir, 'history.csv'))
+
 
 def print_training_summary(output_dir, print_fom):
     history = load_history(output_dir)
@@ -205,6 +211,7 @@ def print_training_summary(output_dir, print_fom):
             print('FoM:', history['val_loss'].loc[best])
     logging.info('Total epoch time: %.3f', history.time.sum())
     logging.info('Mean epoch time: %.3f', history.time.mean())
+
 
 def main():
     """Main function"""
@@ -382,6 +389,7 @@ def main():
     # Finalize
     if dist.rank == 0:
         logging.info('All done!')
+
 
 if __name__ == '__main__':
     main()
