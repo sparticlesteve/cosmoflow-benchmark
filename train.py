@@ -38,7 +38,6 @@ from types import SimpleNamespace
 
 # External imports
 import yaml
-import numpy as np
 import pandas as pd
 import tensorflow as tf
 # Suppress TF warnings
@@ -67,11 +66,6 @@ from utils.argparse import ReadYaml
 from utils.checkpoints import reload_last_checkpoint
 from utils.mlperf_logging import configure_mllogger, log_submission_info
 
-# Stupid workaround until absl logging fix, see:
-# https://github.com/tensorflow/tensorflow/issues/26691
-import absl.logging
-logging.root.removeHandler(absl.logging._absl_handler)
-absl.logging._warn_preinit_stderr = False
 
 def parse_args():
     """Parse command line arguments"""
@@ -128,6 +122,7 @@ def parse_args():
     add_arg('-v', '--verbose', action='store_true')
     return parser.parse_args()
 
+
 def init_workers(distributed=False):
     if distributed:
         hvd.init()
@@ -137,10 +132,12 @@ def init_workers(distributed=False):
     else:
         return SimpleNamespace(rank=0, size=1, local_rank=0, local_size=1)
 
+
 def config_logging(verbose):
     log_format = '%(asctime)s %(levelname)s %(message)s'
     log_level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=log_level, format=log_format)
+
 
 def load_config(args):
     """Reads the YAML config file and returns a config dictionary"""
@@ -189,6 +186,7 @@ def load_config(args):
 
     return config
 
+
 def save_config(config):
     output_dir = config['output_dir']
     config_file = os.path.join(output_dir, 'config.pkl')
@@ -196,8 +194,10 @@ def save_config(config):
     with open(config_file, 'wb') as f:
         pickle.dump(config, f)
 
+
 def load_history(output_dir):
     return pd.read_csv(os.path.join(output_dir, 'history.csv'))
+
 
 def print_training_summary(output_dir, print_fom):
     history = load_history(output_dir)
@@ -211,6 +211,7 @@ def print_training_summary(output_dir, print_fom):
             print('FoM:', history['val_loss'].loc[best])
     logging.info('Total epoch time: %.3f', history.time.sum())
     logging.info('Mean epoch time: %.3f', history.time.mean())
+
 
 def main():
     """Main function"""
@@ -266,14 +267,7 @@ def main():
     # Mixed precision
     if args.amp:
         logging.info('Enabling mixed float16 precision')
-
-        # Suggested bug workaround from https://github.com/tensorflow/tensorflow/issues/38516
-        if tf.__version__.startswith('2.2.'):
-            from tensorflow.python.keras.mixed_precision.experimental import device_compatibility_check
-            device_compatibility_check.log_device_compatibility_check = lambda policy_name, skip_local: None
-        tf.keras.mixed_precision.experimental.set_policy('mixed_float16')
-        # TF 2.3
-        #tf.keras.mixed_precision.set_global_policy('mixed_float16')
+        tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
     # Start MLPerf logging
     if dist.rank == 0 and args.mlperf:
@@ -387,15 +381,15 @@ def main():
     if dist.rank == 0:
         print_training_summary(config['output_dir'], args.print_fom)
 
-    # Print GPU memory - not supported in TF 2.2?
-    #if gpu is not None:
-    #    device = tf.config.list_physical_devices('GPU')[gpu]
-    #    #print(tf.config.experimental.get_memory_usage(device))
-    #    #print(tf.config.experimental.get_memory_info(device))
+    # Print GPU memory
+    if gpu is not None:
+        gpu_mem_info = tf.config.experimental.get_memory_info(f'GPU:{gpu}')
+        logging.info('Peak GPU memory: %.2f GB', gpu_mem_info['peak'] / 1024 / 1024 / 1024)
 
     # Finalize
     if dist.rank == 0:
         logging.info('All done!')
+
 
 if __name__ == '__main__':
     main()

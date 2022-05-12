@@ -4,6 +4,7 @@
 #SBATCH --ntasks-per-node 4
 #SBATCH --cpus-per-task 32
 #SBATCH --gpus-per-task 1
+#SBATCH --gpu-bind=none
 #SBATCH --image=sfarrell/cosmoflow-gpu:latest
 #SBATCH --time 60
 #SBATCH -o logs/%x-%j.out
@@ -12,10 +13,6 @@ args=$@
 export TF_CPP_MIN_LOG_LEVEL=1
 env | grep SLURM_NODELIST
 set -x
-
-# Run the dummy cuda app to "fix" cuda init errors
-#echo "int main() {cudaFree(0);}" > dummy.cu && nvcc -o dummy dummy.cu
-#srun ./dummy
 
 # Run the container
 srun -l -u --mpi=pmi2 shifter --module=gpu \
