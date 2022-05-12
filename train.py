@@ -120,6 +120,8 @@ def parse_args():
 
     # Other settings
     add_arg('--seed', type=int, default=0, help='Specify the random seed')
+    add_arg('--deterministic-ops', action='store_true',
+            help='Enable TF deterministic ops (may not be 100% deterministic)')
     add_arg('--mlperf', action='store_true', help='Enable MLPerf logging')
     add_arg('--wandb', action='store_true', help='Enable W&B logging')
     add_arg('--tensorboard', action='store_true', help='Enable TB logger')
@@ -227,6 +229,11 @@ def main():
 
     # Random seeding
     tf.keras.utils.set_random_seed(args.seed)
+
+    # Enable deterministic ops - should ensure single-gpu determinism but
+    # doesn't seem to guarantee determinism with Horovod distributed training
+    if args.deterministic_ops:
+        tf.config.experimental.enable_op_determinism()
 
     # Setup MLPerf logging
     if args.mlperf:
