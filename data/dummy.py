@@ -29,9 +29,6 @@
 Random dummy dataset specification.
 """
 
-# System
-import math
-
 # Externals
 import tensorflow as tf
 

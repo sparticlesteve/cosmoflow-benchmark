@@ -38,7 +38,6 @@ from types import SimpleNamespace
 
 # External imports
 import yaml
-import numpy as np
 import pandas as pd
 import tensorflow as tf
 # Suppress TF warnings
