@@ -119,6 +119,8 @@ def parse_args():
 
     # Other settings
     add_arg('--seed', type=int, default=0, help='Specify the random seed')
+    add_arg('--deterministic-ops', action='store_true',
+            help='Enable TF deterministic ops (may not be 100% deterministic)')
     add_arg('--mlperf', action='store_true', help='Enable MLPerf logging')
     add_arg('--wandb', action='store_true', help='Enable W&B logging')
     add_arg('--tensorboard', action='store_true', help='Enable TB logger')
@@ -225,8 +227,12 @@ def main():
         logging.info('Configuration: %s', config)
 
     # Random seeding
-    tf.random.set_seed(args.seed)
-    np.random.seed(args.seed)
+    tf.keras.utils.set_random_seed(args.seed)
+
+    # Enable deterministic ops - should ensure single-gpu determinism but
+    # doesn't seem to guarantee determinism with Horovod distributed training
+    if args.deterministic_ops:
+        tf.config.experimental.enable_op_determinism()
 
     # Setup MLPerf logging
     if args.mlperf:
@@ -234,6 +240,7 @@ def main():
     if dist.rank == 0 and args.mlperf:
         mllogger.event(key=mllog.constants.CACHE_CLEAR)
         mllogger.start(key=mllog.constants.INIT_START)
+        mllogger.start(key=mllog.constants.SEED, value=args.seed)
         # Scale logging for mlperf hpc metrics
         mllogger.event(key='number_of_ranks', value=dist.size)
         mllogger.event(key='number_of_nodes', value=(dist.size//dist.local_size))
