@@ -226,9 +226,7 @@ def main():
         logging.info('Configuration: %s', config)
 
     # Random seeding
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    tf.random.set_seed(args.seed)
+    tf.keras.utils.set_random_seed(args.seed)
 
     # Setup MLPerf logging
     if args.mlperf:
