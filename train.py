@@ -66,11 +66,6 @@ from utils.argparse import ReadYaml
 from utils.checkpoints import reload_last_checkpoint
 from utils.mlperf_logging import configure_mllogger, log_submission_info
 
-# Stupid workaround until absl logging fix, see:
-# https://github.com/tensorflow/tensorflow/issues/26691
-import absl.logging
-logging.root.removeHandler(absl.logging._absl_handler)
-absl.logging._warn_preinit_stderr = False
 
 def parse_args():
     """Parse command line arguments"""
