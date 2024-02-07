@@ -1,5 +1,7 @@
 # CosmoFlow TensorFlow Keras benchmark implementation
 
+**WARNING: this repo is old. For the latest MLPerf HPC reference implementation of cosmoflow, see https://github.com/mlcommons/hpc/tree/main/cosmoflow**
+
 This is a an implementation of the
 [CosmoFlow](https://arxiv.org/abs/1808.04728) 3D convolutional neural network
 for benchmarking. It is written in TensorFlow with the Keras API and uses
